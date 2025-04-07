@@ -1,0 +1,27 @@
+{
+  "id": "architecture/client-side",
+  "title": "Client-Side Architecture",
+  "description": "The client-side of the Pokemon TCG Simulator is built with JavaScript and follows a modular structure. This document provides an overview of the client-side architecture.",
+  "source": "@site/docs/architecture/client-side.md",
+  "sourceDirName": "architecture",
+  "slug": "/architecture/client-side",
+  "permalink": "/docs/architecture/client-side",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/your-github-username/pokemon-tcg-sim-docs/edit/main/docs/architecture/client-side.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "System Architecture Overview",
+    "permalink": "/docs/architecture/overview"
+  },
+  "next": {
+    "title": "Server-Side Architecture",
+    "permalink": "/docs/architecture/server-side"
+  }
+}

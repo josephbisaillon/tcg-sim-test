@@ -1,0 +1,27 @@
+{
+  "id": "architecture/overview",
+  "title": "System Architecture Overview",
+  "description": "The Pokemon TCG Simulator is built with a client-server architecture that enables real-time multiplayer gameplay. This document provides a high-level overview of the system architecture.",
+  "source": "@site/docs/architecture/overview.md",
+  "sourceDirName": "architecture",
+  "slug": "/architecture/overview",
+  "permalink": "/docs/architecture/overview",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/your-github-username/pokemon-tcg-sim-docs/edit/main/docs/architecture/overview.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Introduction",
+    "permalink": "/docs/intro"
+  },
+  "next": {
+    "title": "Client-Side Architecture",
+    "permalink": "/docs/architecture/client-side"
+  }
+}

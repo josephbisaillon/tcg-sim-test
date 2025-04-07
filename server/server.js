@@ -4,307 +4,119 @@ import http from 'http';
 import { Server } from 'socket.io';
 import { instrument } from '@socket.io/admin-ui';
 import bcrypt from 'bcryptjs';
-import path from 'path';
-import dotenv from 'dotenv';
-import sqlite3 from 'sqlite3';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
-
-// Handle __dirname in ES modules and adjust for client folder
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const clientDir = path.join(__dirname, '../client');
-
-const envFilePath = path.join(__dirname, 'socket-admin-password.env');
-dotenv.config({ path: envFilePath });
-
-function generateRandomKey(length) {
-  const characters =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let key = '';
-  for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * characters.length);
-    key += characters.charAt(randomIndex);
-  }
-  return key;
-}
+import config from './config.js';
+import database from './database.js';
+import { setupSocketLogger } from './utils/socket-logger.js';
+import { setupSocketHandlers } from './socket-handler.js';
 
 async function main() {
-  const app = express();
-  // HTTP Server Setup
-  const server = http.createServer(app);
+  try {
+    // Initialize database
+    await database.initialize();
 
-  // Socket.IO Server Setup
-  const io = new Server(server, {
-    connectionStateRecovery: {},
-    cors: {
-      origin: ['https://admin.socket.io', 'https://ptcgsim.online/'],
-      credentials: true,
-    },
-  });
-  // Create a new SQLite database
-  const dbFilePath = 'database/db.sqlite';
-  const maxSizeGB = 15;
-  const db = new sqlite3.Database(dbFilePath);
-  let isDatabaseCapacityReached = false;
+    // Express app setup
+    const app = express();
+    const server = http.createServer(app);
 
-  // Check database size
-  const checkDatabaseSizeGB = () => {
-    const stats = fs.statSync(dbFilePath);
-    const fileSizeInBytes = stats.size;
-    const fileSizeInGB = fileSizeInBytes / (1024 * 1024 * 1024); // Convert bytes to gigabytes
-    return fileSizeInGB;
-  };
+    // Socket.IO setup
+    const io = new Server(server, {
+      connectionStateRecovery: {},
+      cors: config.socketIO.cors,
+    });
 
-  // Perform size check periodically
-  setInterval(
-    () => {
-      const currentSize = checkDatabaseSizeGB();
-      if (currentSize > maxSizeGB) {
-        isDatabaseCapacityReached = true;
-      }
-    },
-    1000 * 60 * 60
-  );
-
-  // Create a table to store key-value pairs
-  db.serialize(() => {
-    db.run(
-      'CREATE TABLE IF NOT EXISTS KeyValuePairs (key TEXT PRIMARY KEY, value TEXT)'
+    // Socket.IO Admin UI
+    const saltRounds = 10;
+    const hashedPassword = bcrypt.hashSync(
+      config.socketIO.adminUI.password,
+      saltRounds
     );
-  });
 
-  // Bcrypt Configuration
-  const saltRounds = 10;
-  const plainPassword = process.env.ADMIN_PASSWORD || 'defaultPassword';
-  const hashedPassword = bcrypt.hashSync(plainPassword, saltRounds);
+    instrument(io, {
+      auth: {
+        type: 'basic',
+        username: config.socketIO.adminUI.username,
+        password: hashedPassword,
+      },
+      mode: config.development.enableDebugLogs ? 'development' : 'production',
+    });
 
-  // Socket.IO Admin Instrumentation
-  instrument(io, {
-    auth: {
-      type: 'basic',
-      username: 'admin',
-      password: hashedPassword,
-    },
-    mode: 'development',
-  });
-
-  app.set('view engine', 'ejs');
-  app.set('views', clientDir);
-  app.use(cors());
-  app.use(express.static(clientDir));
-  app.get('/', (_, res) => {
-    res.render('index', { importDataJSON: null });
-  });
-  app.get('/import', (req, res) => {
-    const key = req.query.key;
-    if (!key) {
-      return res.status(400).json({ error: 'Key parameter is missing' });
+    // Setup socket event logging in development
+    if (config.development.logSocketEvents) {
+      setupSocketLogger(io);
     }
 
-    db.get(
-      'SELECT value FROM KeyValuePairs WHERE key = ?',
-      [key],
-      (err, row) => {
-        if (err) {
-          return res.status(500).json({ error: 'Internal server error' });
-        }
+    // Express middleware
+    app.set('view engine', 'ejs');
+    app.set('views', config.server.clientDir);
+    app.use(cors());
+    app.use(express.static(config.server.clientDir));
+
+    // Routes
+    app.get('/', (_, res) => {
+      res.render('index', { importDataJSON: null });
+    });
+
+    app.get('/import', async (req, res) => {
+      const key = req.query.key;
+      if (!key) {
+        return res.status(400).json({ error: 'Key parameter is missing' });
+      }
+
+      try {
+        const row = await database.get(
+          'SELECT value FROM KeyValuePairs WHERE key = ?',
+          [key]
+        );
+
         if (row) {
           res.render('index', { importDataJSON: row.value });
         } else {
           res.status(404).json({ error: 'Key not found' });
         }
-      }
-    );
-  });
-
-  const roomInfo = new Map();
-  // Function to periodically clean up empty rooms
-  const cleanUpEmptyRooms = () => {
-    roomInfo.forEach((room, roomId) => {
-      if (room.players.size === 0 && room.spectators.size === 0) {
-        roomInfo.delete(roomId);
-      }
-    });
-  };
-  // Set up a timer to clean up empty rooms every 5 minutes (adjust as needed)
-  setInterval(cleanUpEmptyRooms, 5 * 60 * 1000);
-  //Socket.IO Connection Handling
-  io.on('connection', async (socket) => {
-    // Function to handle disconnections (unintended)
-    const disconnectHandler = (roomId, username) => {
-      if (!socket.data.leaveRoom) {
-        socket.to(roomId).emit('userDisconnected', username);
-      }
-      // Remove the disconnected user from the roomInfo map
-      if (roomInfo.has(roomId)) {
-        const room = roomInfo.get(roomId);
-
-        if (room.players.has(username)) {
-          room.players.delete(username);
-        } else if (room.spectators.has(username)) {
-          room.spectators.delete(username);
-        }
-
-        // If both players and spectators are empty, remove the roomInfo entry
-        if (room.players.size === 0 && room.spectators.size === 0) {
-          roomInfo.delete(roomId);
-        }
-      }
-    };
-    // Function to handle event emission
-    const emitToRoom = (eventName, data) => {
-      socket.broadcast.to(data.roomId).emit(eventName, data);
-      if (eventName === 'leaveRoom') {
-        socket.leave(data.roomId);
-        if (socket.data.disconnectListener) {
-          socket.data.leaveRoom = true;
-          socket.data.disconnectListener();
-          socket.removeListener('disconnect', socket.data.disconnectListener);
-          socket.data.leaveRoom = false;
-        }
-      }
-    };
-    socket.on('storeGameState', (exportData) => {
-      if (isDatabaseCapacityReached) {
-        socket.emit(
-          'exportGameStateFailed',
-          'No more storage for game states! You should probably tell Michael/Xiao Xiao.'
-        );
-      } else {
-        const key = generateRandomKey(4);
-        db.run(
-          'INSERT OR REPLACE INTO KeyValuePairs (key, value) VALUES (?, ?)',
-          [key, exportData],
-          (err) => {
-            if (err) {
-              socket.emit(
-                'exportGameStateFailed',
-                'Error exporting game! Please try again or save as a file.'
-              );
-            } else {
-              socket.emit('exportGameStateSuccessful', key);
-            }
-          }
-        );
-      }
-    });
-    socket.on('joinGame', (roomId, username, isSpectator) => {
-      if (!roomInfo.has(roomId)) {
-        roomInfo.set(roomId, { players: new Set(), spectators: new Set() });
-      }
-      const room = roomInfo.get(roomId);
-
-      if (room.players.size < 2 || isSpectator) {
-        socket.join(roomId);
-        // Check if the user is a spectator or there are fewer than 2 players
-        if (isSpectator) {
-          room.spectators.add(username);
-          socket.emit('spectatorJoin');
-        } else {
-          room.players.add(username);
-          socket.emit('joinGame');
-          socket.data.disconnectListener = () =>
-            disconnectHandler(roomId, username);
-          socket.on('disconnect', socket.data.disconnectListener);
-        }
-      } else {
-        socket.emit('roomReject');
+      } catch (error) {
+        console.error('Database error:', error);
+        res.status(500).json({ error: 'Internal server error' });
       }
     });
 
-    socket.on('userReconnected', (data) => {
-      if (!roomInfo.has(data.roomId)) {
-        roomInfo.set(data.roomId, {
-          players: new Set(),
-          spectators: new Set(),
-        });
-      }
-      const room = roomInfo.get(data.roomId);
-      socket.join(data.roomId);
-      if (!data.notSpectator) {
-        room.spectators.add(data.username);
-      } else {
-        room.players.add(data.username);
-        socket.data.disconnectListener = () =>
-          disconnectHandler(data.roomId, data.username);
-        socket.on('disconnect', socket.data.disconnectListener);
-        io.to(data.roomId).emit('userReconnected', data);
-      }
+    // Setup Socket.IO event handlers
+    const socketHandlers = setupSocketHandlers(io);
+
+    // Start the server
+    const { port, host } = config.server;
+    server.listen(port, host, () => {
+      console.log(`Server is running at http://${host}:${port}`);
+      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`Database: ${config.database.path}`);
     });
 
-    // List of socket events
-    const events = [
-      'leaveRoom',
-      'requestAction',
-      'pushAction',
-      'resyncActions',
-      'catchUpActions',
-      'syncCheck',
-      'appendMessage',
-      'spectatorActionData',
-      'initiateImport',
-      'endImport',
-      // 'exchangeData',
-      // 'loadDeckData',
-      // 'reset',
-      // 'setup',
-      // 'takeTurn',
-      // 'draw',
-      // 'moveCardBundle',
-      // 'shuffleIntoDeck',
-      // 'moveToDeckTop',
-      // 'switchWithDeckTop',
-      // 'viewDeck',
-      // 'shuffleAll',
-      // 'discardAll',
-      // 'lostZoneAll',
-      // 'handAll',
-      // 'leaveAll',
-      // 'discardAndDraw',
-      // 'shuffleAndDraw',
-      // 'shuffleBottomAndDraw',
-      // 'shuffleZone',
-      // 'useAbility',
-      // 'removeAbilityCounter',
-      // 'addDamageCounter',
-      // 'updateDamageCounter',
-      // 'removeDamageCounter',
-      // 'addSpecialCondition',
-      // 'updateSpecialCondition',
-      // 'removeSpecialCondition',
-      // 'discardBoard',
-      // 'handBoard',
-      // 'shuffleBoard',
-      // 'lostZoneBoard',
-      'lookAtCards',
-      'stopLookingAtCards',
-      'revealCards',
-      'hideCards',
-      'revealShortcut',
-      'hideShortcut',
-      'lookShortcut',
-      'stopLookingShortcut',
-      // 'playRandomCardFaceDown',
-      // 'rotateCard',
-      // 'changeType',
-      // 'attack',
-      // 'pass',
-      // 'VSTARGXFunction',
-    ];
+    // Handle graceful shutdown
+    const gracefulShutdown = async () => {
+      console.log('Shutting down gracefully...');
 
-    // Register event listeners using the common function
-    for (const event of events) {
-      socket.on(event, (data) => {
-        emitToRoom(event, data);
+      // Close the server
+      server.close(() => {
+        console.log('HTTP server closed');
       });
-    }
-  });
 
-  const port = 4000;
-  server.listen(port, () => {
-    // eslint-disable-next-line no-console
-    console.log(`Server is running at http://localhost:${port}`);
-  });
+      // Close database connection
+      try {
+        await database.close();
+        console.log('Database connection closed');
+      } catch (error) {
+        console.error('Error closing database:', error);
+      }
+
+      process.exit(0);
+    };
+
+    // Listen for termination signals
+    process.on('SIGTERM', gracefulShutdown);
+    process.on('SIGINT', gracefulShutdown);
+  } catch (error) {
+    console.error('Server initialization error:', error);
+    process.exit(1);
+  }
 }
+
 main();

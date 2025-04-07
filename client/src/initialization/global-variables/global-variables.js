@@ -4,9 +4,22 @@ import { getZone } from '../../setup/zones/get-zone.js';
 
 export const version = '1.5.1';
 
+// Automatically detect if we're in a local development environment
+const isLocalDevelopment =
+  window.location.hostname === 'localhost' ||
+  window.location.hostname === '127.0.0.1';
+const baseUrl = isLocalDevelopment
+  ? 'http://localhost:4000'
+  : 'https://ptcgsim.online';
+
+// Log the environment for debugging purposes
+console.log(
+  `Running in ${isLocalDevelopment ? 'LOCAL DEVELOPMENT' : 'PRODUCTION'} environment`
+);
+console.log(`Using base URL: ${baseUrl}`);
+
 // exports a WebSocket connection using the Socket.IO library, loaded via CDN in index.ejs
-export const socket = io('https://ptcgsim.online');
-// export const socket = io('http://localhost:4000/');
+export const socket = io(baseUrl);
 
 // export references to HTML elements 'selfContainer' and 'oppContainer', and their respective content window documents for ease of access to the iframes
 export const selfContainer = document.getElementById('selfContainer');
@@ -24,6 +37,12 @@ export const systemState = {
   exportActionData: [],
   spectatorId: '',
   oppCounter: 0,
+  // Buffer for actions that arrive out of order
+  actionBuffer: [],
+  // Flag to indicate if a resync is in progress
+  isResyncing: false,
+  // Last time a full sync was performed
+  lastFullSyncTime: Date.now(),
   isTwoPlayer: false,
   isReplay: false, // should be treated as false no matter what if isTwoPlayer is true
   replayActionData: [],
@@ -42,13 +61,13 @@ export const systemState = {
   selfDeckData: '',
   p1OppDeckData: '', // refers to the opponent's data in 1 player mode, i.e., the "alt" deck data
   p2OppDeckData: '', // refers to the opponent's data in 2 player mode, i.e., the other player's deck data
-  cardBackSrc: 'https://ptcgsim.online/src/assets/cardback.png',
-  p1OppCardBackSrc: 'https://ptcgsim.online/src/assets/cardback.png',
-  p2OppCardBackSrc: 'https://ptcgsim.online/src/assets/cardback.png',
+  cardBackSrc: `${baseUrl}/src/assets/cardback.png`,
+  p1OppCardBackSrc: `${baseUrl}/src/assets/cardback.png`,
+  p2OppCardBackSrc: `${baseUrl}/src/assets/cardback.png`,
 };
 
 // preload image
-preloadImage('https://ptcgsim.online/src/assets/cardback.png');
+preloadImage(`${baseUrl}/src/assets/cardback.png`);
 
 document.body.style.backgroundImage = `linear-gradient(rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.75)), url('https://wallpapercave.com/wp/wp10484598.jpg')`;
 document.body.style.backgroundPosition = '-200px 0';

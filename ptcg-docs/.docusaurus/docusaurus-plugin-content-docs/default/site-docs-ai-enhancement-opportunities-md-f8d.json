@@ -1,0 +1,27 @@
+{
+  "id": "ai-enhancement/opportunities",
+  "title": "AI Enhancement Opportunities",
+  "description": "The Pokemon TCG Simulator provides numerous opportunities for AI enhancement. This document outlines key areas where AI can be integrated to improve gameplay, provide assistance, and create challenging opponents.",
+  "source": "@site/docs/ai-enhancement/opportunities.md",
+  "sourceDirName": "ai-enhancement",
+  "slug": "/ai-enhancement/opportunities",
+  "permalink": "/docs/ai-enhancement/opportunities",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/your-github-username/pokemon-tcg-sim-docs/edit/main/docs/ai-enhancement/opportunities.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 1,
+  "frontMatter": {
+    "sidebar_position": 1
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Server-Side Architecture",
+    "permalink": "/docs/architecture/server-side"
+  },
+  "next": {
+    "title": "AI Integration Guide",
+    "permalink": "/docs/ai-enhancement/integration"
+  }
+}

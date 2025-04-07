@@ -13,6 +13,11 @@ import {
 import { socket, systemState } from '../../front-end.js';
 import { appendMessage } from '../../setup/chatbox/append-message.js';
 import { exchangeData } from '../../setup/deck-constructor/exchange-data.js';
+import {
+  bufferAction,
+  clearActionBuffer,
+  processBufferedActions,
+} from '../../setup/general/action-buffer.js';
 import { acceptAction } from '../../setup/general/accept-action.js';
 import { catchUpActions } from '../../setup/general/catch-up-actions.js';
 import { cleanActionData } from '../../setup/general/clean-action-data.js';
@@ -47,6 +52,9 @@ export const initializeSocketEventListeners = () => {
     systemState.isTwoPlayer = true;
     cleanActionData('self');
     cleanActionData('opp');
+    clearActionBuffer();
+    systemState.isResyncing = false;
+    systemState.lastFullSyncTime = Date.now();
     reset('opp', true, false, false, false);
     exchangeData(
       'self',
@@ -185,6 +193,9 @@ export const initializeSocketEventListeners = () => {
     isImporting = true;
     cleanActionData('self');
     cleanActionData('opp');
+    clearActionBuffer();
+    systemState.isResyncing = false;
+    systemState.lastFullSyncTime = Date.now();
   });
   socket.on('endImport', () => {
     isImporting = false;
@@ -194,29 +205,19 @@ export const initializeSocketEventListeners = () => {
       document.getElementById('spectatorModeCheckbox').checked &&
       systemState.isTwoPlayer
     );
+
     if (notSpectator) {
       if (data.action === 'exchangeData') {
         cleanActionData('opp');
       }
-      if (data.counter === parseInt(systemState.oppCounter) + 1) {
-        systemState.oppCounter++;
-        // systemState.spectatorActionData.push({user: 'opp', emit: true, action: data.action, parameters: data.parameters});
-        if (data.action !== 'exchangeData' && data.action !== 'loadDeckData') {
-          systemState.exportActionData.push({
-            user: 'opp',
-            emit: true,
-            action: data.action,
-            parameters: data.parameters,
-          });
-        }
-        startKeybindsSleep();
-        acceptAction('opp', data.action, data.parameters);
-      } else if (data.counter > parseInt(systemState.oppCounter) + 1) {
-        const data = {
-          roomId: systemState.roomId,
-          counter: systemState.oppCounter,
-        };
-        socket.emit('resyncActions', data);
+
+      // Use the action buffer system to handle the action
+      const wasBuffered = bufferAction(data);
+
+      // If the action wasn't buffered (it was processed immediately),
+      // check if there are any buffered actions that can now be processed
+      if (!wasBuffered) {
+        processBufferedActions();
       }
     }
   });
@@ -243,12 +244,30 @@ export const initializeSocketEventListeners = () => {
       document.getElementById('spectatorModeCheckbox').checked &&
       systemState.isTwoPlayer
     );
-    if (notSpectator && data.counter >= parseInt(systemState.oppCounter) + 1) {
-      const data = {
-        roomId: systemState.roomId,
-        counter: systemState.oppCounter,
-      };
-      socket.emit('resyncActions', data);
+
+    if (!notSpectator) return;
+
+    // Check if the other player is ahead of us
+    if (data.counter > parseInt(systemState.oppCounter) + 1) {
+      console.log(
+        `Sync check detected gap: remote=${data.counter}, local=${systemState.oppCounter}`
+      );
+
+      // Only request a resync if we're not already resyncing and it's been at least 10 seconds since the last full sync
+      const timeSinceLastSync = Date.now() - systemState.lastFullSyncTime;
+      if (!systemState.isResyncing && timeSinceLastSync > 10000) {
+        console.log('Requesting resync due to sync check');
+        const resyncData = {
+          roomId: systemState.roomId,
+          counter: systemState.oppCounter,
+        };
+        socket.emit('resyncActions', resyncData);
+      }
+    }
+
+    // If we have buffered actions, try to process them
+    if (systemState.actionBuffer.length > 0) {
+      processBufferedActions();
     }
   });
   // socket.on('exchangeData', (data) => {

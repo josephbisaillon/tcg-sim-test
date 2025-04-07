@@ -774,12 +774,18 @@ changeCardBackButton.addEventListener('click', () => {
   let userInput = window.prompt("Paste your image URL or type 'default':");
   const user = mainDeckImportInput.style.display !== 'none' ? 'self' : 'opp';
 
+  // Get the base URL from the systemState
+  const baseUrl = systemState.cardBackSrc.substring(
+    0,
+    systemState.cardBackSrc.indexOf('/src/')
+  );
+
   if (
     userInput !== null &&
     userInput.trim() !== '' &&
     userInput.toLowerCase() === 'default'
   ) {
-    userInput = 'https://ptcgsim.online/src/assets/cardback.png';
+    userInput = `${baseUrl}/src/assets/cardback.png`;
   }
   const img = new Image();
   img.onload = () => {

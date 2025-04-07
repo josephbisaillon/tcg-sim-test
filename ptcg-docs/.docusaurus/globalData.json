@@ -1,0 +1,63 @@
+{
+  "docusaurus-plugin-content-docs": {
+    "default": {
+      "path": "/docs",
+      "versions": [
+        {
+          "name": "current",
+          "label": "Next",
+          "isLast": true,
+          "path": "/docs",
+          "mainDocId": "intro",
+          "docs": [
+            {
+              "id": "ai-enhancement/implementation",
+              "path": "/docs/ai-enhancement/implementation",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "ai-enhancement/integration",
+              "path": "/docs/ai-enhancement/integration",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "ai-enhancement/opportunities",
+              "path": "/docs/ai-enhancement/opportunities",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "architecture/client-side",
+              "path": "/docs/architecture/client-side",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "architecture/overview",
+              "path": "/docs/architecture/overview",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "architecture/server-side",
+              "path": "/docs/architecture/server-side",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "intro",
+              "path": "/docs/intro",
+              "sidebar": "tutorialSidebar"
+            }
+          ],
+          "draftIds": [],
+          "sidebars": {
+            "tutorialSidebar": {
+              "link": {
+                "path": "/docs/intro",
+                "label": "intro"
+              }
+            }
+          }
+        }
+      ],
+      "breadcrumbs": true
+    }
+  }
+}

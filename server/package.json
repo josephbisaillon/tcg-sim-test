@@ -1,7 +1,13 @@
 {
   "name": "ptcg-sim-server",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "node server.js",
+    "dev": "NODE_ENV=development nodemon server.js",
+    "dev:win": "set NODE_ENV=development&& nodemon server.js",
+    "lint": "eslint .",
+    "setup": "node scripts/setup.js",
+    "test": "mocha tests/socket-tests.js",
+    "test:watch": "mocha --watch tests/socket-tests.js"
   },
   "dependencies": {
     "@socket.io/admin-ui": "^0.5.1",
@@ -14,7 +20,10 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
+    "nodemon": "^3.0.2",
+    "socket.io-client": "^4.7.4"
   },
   "type": "module"
 }

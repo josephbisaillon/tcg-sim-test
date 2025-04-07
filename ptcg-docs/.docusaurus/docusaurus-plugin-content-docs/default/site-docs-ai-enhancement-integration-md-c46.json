@@ -1,0 +1,27 @@
+{
+  "id": "ai-enhancement/integration",
+  "title": "AI Integration Guide",
+  "description": "This guide provides a high-level overview of how to integrate AI into the Pokemon TCG Simulator. It focuses on the architectural considerations and integration points rather than the implementation details.",
+  "source": "@site/docs/ai-enhancement/integration.md",
+  "sourceDirName": "ai-enhancement",
+  "slug": "/ai-enhancement/integration",
+  "permalink": "/docs/ai-enhancement/integration",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/your-github-username/pokemon-tcg-sim-docs/edit/main/docs/ai-enhancement/integration.md",
+  "tags": [],
+  "version": "current",
+  "sidebarPosition": 2,
+  "frontMatter": {
+    "sidebar_position": 2
+  },
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "AI Enhancement Opportunities",
+    "permalink": "/docs/ai-enhancement/opportunities"
+  },
+  "next": {
+    "title": "AI Implementation Guide",
+    "permalink": "/docs/ai-enhancement/implementation"
+  }
+}

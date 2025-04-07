@@ -1,17 +1,42 @@
 import { systemState } from '../../front-end.js';
 import { acceptAction } from './accept-action.js';
+import { clearActionBuffer } from './action-buffer.js';
 
+/**
+ * Processes catch-up actions received from the other player during a resync
+ * @param {Array} actionData - Array of actions from the other player
+ */
 export const catchUpActions = (actionData) => {
-  const missingData = actionData.slice(systemState.oppCounter); // make sure you are only implementing actions that you don't have
+  // Clear any buffered actions since we're getting a fresh state
+  clearActionBuffer();
 
+  // Log the catch-up
+  console.log(
+    `Received ${actionData.length} actions, our counter: ${systemState.oppCounter}`
+  );
+
+  // Only process actions we don't already have
+  const missingData = actionData.slice(systemState.oppCounter);
+
+  if (missingData.length === 0) {
+    console.log('No missing actions to process');
+    return;
+  }
+
+  console.log(`Processing ${missingData.length} missing actions`);
+
+  // First, update our internal state with all the missing actions
   missingData.forEach((entry) => {
-    systemState.oppCounter++;
-    if (entry.parameters[0] === 'self') {
-      entry.parameters[0] = 'opp';
-    } else if (entry.parameters[0] === 'opp') {
-      entry.parameters[0] = 'self';
+    // Swap self/opp in parameters since these actions are from the other player's perspective
+    if (entry.parameters && entry.parameters.length > 0) {
+      if (entry.parameters[0] === 'self') {
+        entry.parameters[0] = 'opp';
+      } else if (entry.parameters[0] === 'opp') {
+        entry.parameters[0] = 'self';
+      }
     }
-    // systemState.spectatorActionData.push({user: 'opp', action: entry.action, parameters: entry.parameters});
+
+    // Add to export data for spectators
     if (entry.action !== 'exchangeData' && entry.action !== 'loadDeckData') {
       systemState.exportActionData.push({
         user: 'opp',
@@ -22,6 +47,7 @@ export const catchUpActions = (actionData) => {
     }
   });
 
+  // Find critical actions that require special handling
   const mostRecentDeckDataIndex = [...missingData]
     .reverse()
     .findIndex(
@@ -33,43 +59,51 @@ export const catchUpActions = (actionData) => {
     .reverse()
     .findIndex((entry) => entry.action === 'reset' || entry.action === 'setup');
 
-  // Retrieve all entries starting from the most recent reset/setup entry
-  const mostRecentResetAndAfterEntries =
-    mostRecentResetEntryIndex !== -1
-      ? missingData.slice(missingData.length - mostRecentResetEntryIndex - 1)
-      : 0;
+  // Determine which actions to apply based on critical actions
+  let actionsToApply = [];
 
-  const mostRecentDeckDataEntry =
-    mostRecentDeckDataIndex !== -1
-      ? missingData[missingData.length - mostRecentDeckDataIndex - 1]
-      : 0;
-
-  const entriesAfterMostRecentDeckData =
-    mostRecentDeckDataIndex !== -1
-      ? missingData.slice(missingData.length - mostRecentDeckDataIndex)
-      : 0;
-
-  if (mostRecentDeckDataEntry) {
-    acceptAction(
-      'opp',
-      mostRecentDeckDataEntry.action,
-      mostRecentDeckDataEntry.parameters
-    );
-  }
   if (
-    mostRecentResetAndAfterEntries &&
-    mostRecentResetEntryIndex < mostRecentDeckDataIndex
+    mostRecentResetEntryIndex !== -1 &&
+    (mostRecentDeckDataIndex === -1 ||
+      mostRecentResetEntryIndex < mostRecentDeckDataIndex)
   ) {
-    mostRecentResetAndAfterEntries.forEach((data) =>
-      acceptAction('opp', data.action, data.parameters)
+    // If there's a reset/setup after the most recent deck data, apply from that point
+    actionsToApply = missingData.slice(
+      missingData.length - mostRecentResetEntryIndex - 1
     );
-  } else if (mostRecentDeckDataEntry) {
-    entriesAfterMostRecentDeckData.forEach((data) =>
-      acceptAction('opp', data.action, data.parameters)
+  } else if (mostRecentDeckDataIndex !== -1) {
+    // If there's deck data, apply it first, then all actions after it
+    const deckDataEntry =
+      missingData[missingData.length - mostRecentDeckDataIndex - 1];
+    acceptAction('opp', deckDataEntry.action, deckDataEntry.parameters);
+
+    // Then apply all actions after the deck data
+    actionsToApply = missingData.slice(
+      missingData.length - mostRecentDeckDataIndex
     );
   } else {
-    missingData.forEach((data) =>
-      acceptAction('opp', data.action, data.parameters)
-    );
+    // Otherwise, apply all missing actions
+    actionsToApply = missingData;
   }
+
+  // Apply the actions in sequence
+  actionsToApply.forEach((data, index) => {
+    // Update our counter as we process each action
+    systemState.oppCounter = systemState.oppCounter + 1;
+
+    // Skip deck data if we already processed it above
+    if (
+      mostRecentDeckDataIndex !== -1 &&
+      index === 0 &&
+      (data.action === 'exchangeData' || data.action === 'loadDeckData')
+    ) {
+      return;
+    }
+
+    acceptAction('opp', data.action, data.parameters);
+  });
+
+  // Update the last sync time
+  systemState.lastFullSyncTime = Date.now();
+  console.log(`Catch-up complete, new counter: ${systemState.oppCounter}`);
 };
