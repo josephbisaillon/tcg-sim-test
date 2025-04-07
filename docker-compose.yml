@@ -24,7 +24,7 @@ services:
       - ENABLE_DEBUG_LOGS=${ENABLE_DEBUG_LOGS:-false}
       - LOG_SOCKET_EVENTS=${LOG_SOCKET_EVENTS:-false}
       - ENABLE_ANALYTICS=${ENABLE_ANALYTICS:-false}
-      - ANALYTICS_SCRIPTS=${ANALYTICS_SCRIPTS:-'{}'}
+      - ANALYTICS_SCRIPTS=${ANALYTICS_SCRIPTS:-{}}
       # Add environment variable to allow better-sqlite3 build script to run
       - BETTER_SQLITE3_BINARY=true
     healthcheck:
