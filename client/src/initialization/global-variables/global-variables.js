@@ -8,9 +8,9 @@ export const version = '1.5.1';
 const isLocalDevelopment =
   window.location.hostname === 'localhost' ||
   window.location.hostname === '127.0.0.1';
-const baseUrl = isLocalDevelopment
-  ? 'http://localhost:4000'
-  : 'https://ptcgsim.online';
+
+// Dynamically construct the base URL using the current window location
+const baseUrl = `${window.location.protocol}//${window.location.host}`;
 
 // Log the environment for debugging purposes
 console.log(

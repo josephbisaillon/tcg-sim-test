@@ -10,13 +10,7 @@ Follow these steps to run PTCG-sim on your local machine:
 
 2. **Create Sqlite Database:** In the server/database directory, add a file named "db.sqlite". This is needed for storing game states, which is needed for exporting/importing game states as a URL. Note that you need to add this database even if you don't intend working with the export/imports as the server expects the file to exist.
 
-3. **Configure WebSocket Connection:** Navigate to the `global-variables.js` file and replace the WebSocket connection with your own local server. For instance:
-
-   ```javascript
-   const socket = io('http://localhost:4000/');
-   ```
-
-   Ensure that the URL is consistent with the one in the server.js file.
+3. **WebSocket Connection:** The application now automatically uses the current window location for WebSocket connections. No manual configuration is needed as the base URL is dynamically determined.
 
 4. **Start Local Server:** Use nodemon to start running `server.js` locally. You can do this from the root directory by running `pnpm start`. This will load the repository with entry point being `front-end.js`. This file initializes various global variables, sets up the DOM, and registers socket event listeners.
 
@@ -112,6 +106,11 @@ The STATUS column will show `healthy` if everything is working correctly.
 3. **Scaling:**
    - For high-traffic deployments, consider using a more robust database solution
    - Implement a load balancer if deploying multiple instances
+
+4. **Deployment URLs:**
+   - The application automatically uses the current window location for its base URL
+   - This allows for flexible deployment to any domain or port without configuration
+   - Both WebSocket connections and asset URLs will adapt to the current domain
 
 ### Troubleshooting
 
