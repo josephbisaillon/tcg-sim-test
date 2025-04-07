@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  ptcg-sim:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ptcg-sim
+    container_name: ptcg-sim
+    restart: unless-stopped
+    ports:
+      - "${PORT:-4000}:4000"
+    volumes:
+      - ptcg-sim-data:/app/server/database
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - HOST=0.0.0.0
+      - DB_PATH=/app/server/database/db.sqlite
+      - DB_MAX_SIZE_GB=${DB_MAX_SIZE_GB:-15}
+      - DB_CHECK_INTERVAL=${DB_CHECK_INTERVAL:-3600000}
+      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-defaultPassword}
+      - ENABLE_DEBUG_LOGS=${ENABLE_DEBUG_LOGS:-false}
+      - LOG_SOCKET_EVENTS=${LOG_SOCKET_EVENTS:-false}
+      # Add environment variable to allow better-sqlite3 build script to run
+      - BETTER_SQLITE3_BINARY=true
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:4000/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  ptcg-sim-data:
+    name: ptcg-sim-data

@@ -52,6 +52,17 @@ async function main() {
     app.use(express.static(config.server.clientDir));
 
     // Routes
+    app.get('/health', async (_, res) => {
+      try {
+        // Check database connection
+        await database.get('SELECT 1');
+        res.status(200).json({ status: 'healthy' });
+      } catch (error) {
+        console.error('Health check failed:', error);
+        res.status(503).json({ status: 'unhealthy', error: error.message });
+      }
+    });
+
     app.get('/', (_, res) => {
       res.render('index', { importDataJSON: null });
     });
