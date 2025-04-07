@@ -66,6 +66,8 @@ The Docker setup is configurable through environment variables. You can either:
 | ADMIN_USERNAME | Username for Socket.IO Admin UI | admin |
 | ADMIN_PASSWORD | Password for Socket.IO Admin UI | defaultPassword |
 | DB_MAX_SIZE_GB | Maximum size for the SQLite database | 15 |
+| ENABLE_ANALYTICS | Enable/disable analytics tracking | false |
+| ANALYTICS_SCRIPTS | JSON configuration for analytics services | {} |
 
 ### Data Persistence
 
@@ -91,6 +93,50 @@ docker ps
 ```
 
 The STATUS column will show `healthy` if everything is working correctly.
+
+### Analytics Configuration
+
+The application supports configurable analytics tracking through environment variables. This allows you to integrate with various analytics services without modifying the code.
+
+#### Enabling Analytics
+
+To enable analytics, set the `ENABLE_ANALYTICS` environment variable to `true`:
+
+```bash
+ENABLE_ANALYTICS=true docker-compose up -d
+```
+
+#### Configuring Analytics Services
+
+Analytics services are configured through the `ANALYTICS_SCRIPTS` environment variable, which accepts a JSON string:
+
+```bash
+ANALYTICS_SCRIPTS='{"cloudflare":{"enabled":true,"token":"your-token-here"},"google":{"enabled":true,"id":"G-XXXXXXXXXX"}}' docker-compose up -d
+```
+
+#### Supported Analytics Services
+
+1. **Cloudflare Web Analytics:**
+   ```json
+   {
+     "cloudflare": {
+       "enabled": true,
+       "token": "your-cloudflare-token"
+     }
+   }
+   ```
+
+2. **Google Analytics:**
+   ```json
+   {
+     "google": {
+       "enabled": true,
+       "id": "G-XXXXXXXXXX"
+     }
+   }
+   ```
+
+You can enable multiple services simultaneously by including them in the JSON configuration.
 
 ### Production Deployment Considerations
 

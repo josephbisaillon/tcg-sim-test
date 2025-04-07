@@ -13,16 +13,18 @@ services:
     volumes:
       - ptcg-sim-data:/app/server/database
     environment:
+      - PORT=${PORT:-4000}
+      - HOST=${HOST:-0.0.0.0}
       - NODE_ENV=production
-      - PORT=4000
-      - HOST=0.0.0.0
       - DB_PATH=/app/server/database/db.sqlite
       - DB_MAX_SIZE_GB=${DB_MAX_SIZE_GB:-15}
       - DB_CHECK_INTERVAL=${DB_CHECK_INTERVAL:-3600000}
       - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-defaultPassword}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-changeThisInProduction}
       - ENABLE_DEBUG_LOGS=${ENABLE_DEBUG_LOGS:-false}
       - LOG_SOCKET_EVENTS=${LOG_SOCKET_EVENTS:-false}
+      - ENABLE_ANALYTICS=${ENABLE_ANALYTICS:-false}
+      - ANALYTICS_SCRIPTS=${ANALYTICS_SCRIPTS:-'{}'}
       # Add environment variable to allow better-sqlite3 build script to run
       - BETTER_SQLITE3_BINARY=true
     healthcheck:

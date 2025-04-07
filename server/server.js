@@ -64,7 +64,15 @@ async function main() {
     });
 
     app.get('/', (_, res) => {
-      res.render('index', { importDataJSON: null });
+      const analyticsConfig = process.env.ANALYTICS_SCRIPTS 
+        ? JSON.parse(process.env.ANALYTICS_SCRIPTS) 
+        : {};
+      
+      res.render('index', { 
+        importDataJSON: null,
+        enableAnalytics: process.env.ENABLE_ANALYTICS === 'true',
+        analyticsConfig
+      });
     });
 
     app.get('/import', async (req, res) => {
@@ -80,7 +88,15 @@ async function main() {
         );
 
         if (row) {
-          res.render('index', { importDataJSON: row.value });
+          const analyticsConfig = process.env.ANALYTICS_SCRIPTS 
+            ? JSON.parse(process.env.ANALYTICS_SCRIPTS) 
+            : {};
+          
+          res.render('index', { 
+            importDataJSON: row.value,
+            enableAnalytics: process.env.ENABLE_ANALYTICS === 'true',
+            analyticsConfig
+          });
         } else {
           res.status(404).json({ error: 'Key not found' });
         }

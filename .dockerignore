@@ -11,20 +11,17 @@ yarn-error.log
 
 # Environment variables
 .env
-.env.*
-!.env.example
+.env.local
+.env.development
+.env.test
 
-# Database
-server/database/db.sqlite
-
-# Logs
-logs
-*.log
+# Keep production environment variables
+!.env.production
 
 # Build artifacts
 dist
 build
-coverage
+*.log
 
 # Editor directories and files
 .idea
@@ -34,4 +31,29 @@ coverage
 
 # OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+
+# Database files (these will be mounted as volumes)
+server/database/*.sqlite
+server/database/*.db
+
+# Documentation
+docs
+*.md
+!README.md
+
+# Test files
+test
+tests
+__tests__
+*.test.js
+*.spec.js
+
+# Temporary files
+tmp
+temp
