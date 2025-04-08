@@ -1,6 +1,10 @@
 import { socket, systemState } from '../../front-end.js';
 import { acceptAction } from './accept-action.js';
 import { startKeybindsSleep } from '../../actions/keybinds/keybindSleep.js';
+import { logSyncEvent } from '../sync/sync-ui.js';
+
+// Default timeout for processing buffered actions with gaps
+const DEFAULT_BUFFER_TIMEOUT = 500; // ms
 
 /**
  * Adds an action to the buffer if it's not the next expected action
@@ -13,6 +17,15 @@ export const bufferAction = (data) => {
   // If this is the next expected action, process it immediately
   if (data.counter === expectedCounter) {
     processAction(data);
+    
+    // Log for debugging
+    if (systemState.debugMode) {
+      logSyncEvent('process-action', { 
+        counter: data.counter, 
+        action: data.action 
+      });
+    }
+    
     return false;
   }
 
@@ -30,6 +43,18 @@ export const bufferAction = (data) => {
       console.log(
         `Buffered action #${data.counter} (waiting for #${expectedCounter})`
       );
+      
+      // Log for debugging
+      if (systemState.debugMode) {
+        logSyncEvent('buffer-action', { 
+          counter: data.counter, 
+          action: data.action,
+          expectedCounter
+        });
+      }
+      
+      // Schedule processing of buffered actions with small gaps
+      scheduleProcessBufferedActions();
     }
     return true;
   }
@@ -38,6 +63,16 @@ export const bufferAction = (data) => {
   console.log(
     `Ignoring action #${data.counter} (already processed, current: #${systemState.oppCounter})`
   );
+  
+  // Log for debugging
+  if (systemState.debugMode) {
+    logSyncEvent('ignore-action', { 
+      counter: data.counter, 
+      action: data.action,
+      currentCounter: systemState.oppCounter
+    });
+  }
+  
   return false;
 };
 
@@ -85,6 +120,62 @@ const processAction = (data) => {
 };
 
 /**
+ * Schedule processing of buffered actions after a short delay
+ * This helps handle small gaps in the action sequence
+ */
+const scheduleProcessBufferedActions = () => {
+  // Clear any existing timeout
+  if (systemState.bufferProcessTimeout) {
+    clearTimeout(systemState.bufferProcessTimeout);
+  }
+  
+  // Set a new timeout
+  const timeout = systemState.actionBufferTimeout || DEFAULT_BUFFER_TIMEOUT;
+  systemState.bufferProcessTimeout = setTimeout(() => {
+    processBufferedActionsWithGaps();
+  }, timeout);
+};
+
+/**
+ * Processes buffered actions even if there are small gaps
+ * This helps prevent the system from getting stuck waiting for missing actions
+ */
+const processBufferedActionsWithGaps = () => {
+  if (systemState.actionBuffer.length === 0) return;
+  
+  const expectedCounter = parseInt(systemState.oppCounter) + 1;
+  const nextBufferedCounter = systemState.actionBuffer[0].counter;
+  const gap = nextBufferedCounter - expectedCounter;
+  
+  // If the gap is small (1-3 actions), process the next action anyway
+  // This helps prevent getting stuck due to lost packets
+  if (gap > 0 && gap <= 3 && !systemState.isResyncing) {
+    console.log(`Processing action #${nextBufferedCounter} despite gap of ${gap} actions`);
+    
+    // Log for debugging
+    if (systemState.debugMode) {
+      logSyncEvent('process-with-gap', { 
+        counter: nextBufferedCounter, 
+        gap,
+        expectedCounter
+      });
+    }
+    
+    const nextAction = systemState.actionBuffer.shift();
+    processAction(nextAction);
+    
+    // Request a resync to fill in the missing actions
+    requestResync();
+    
+    // Continue processing any actions that are now ready
+    processBufferedActions();
+  } else if (gap > 3 && !systemState.isResyncing) {
+    // For larger gaps, request a resync
+    requestResync();
+  }
+};
+
+/**
  * Processes any buffered actions that are now ready
  */
 export const processBufferedActions = () => {
@@ -108,6 +199,14 @@ export const processBufferedActions = () => {
 
   if (actionsProcessed > 0) {
     console.log(`Processed ${actionsProcessed} buffered actions`);
+    
+    // Log for debugging
+    if (systemState.debugMode) {
+      logSyncEvent('processed-buffered', { 
+        count: actionsProcessed,
+        remainingBuffered: systemState.actionBuffer.length
+      });
+    }
   }
 
   // If we still have buffered actions but can't process them,
@@ -120,7 +219,14 @@ export const processBufferedActions = () => {
       console.log(
         `Action sequence gap detected: missing ${gap} action(s) before #${nextBufferedCounter}`
       );
-      requestResync();
+      
+      // Schedule processing with gaps after a short delay
+      scheduleProcessBufferedActions();
+      
+      // If the gap is large, request a resync immediately
+      if (gap > 3) {
+        requestResync();
+      }
     }
   }
 };
@@ -131,8 +237,22 @@ export const processBufferedActions = () => {
 const requestResync = () => {
   if (systemState.isResyncing) return;
 
+  // Trigger sync start event if defined
+  if (typeof systemState.onSyncStart === 'function') {
+    systemState.onSyncStart();
+  }
+
   systemState.isResyncing = true;
+  systemState.resyncStartTime = Date.now();
   console.log(`Requesting resync from counter ${systemState.oppCounter}`);
+
+  // Log for debugging
+  if (systemState.debugMode) {
+    logSyncEvent('request-resync', { 
+      counter: systemState.oppCounter,
+      bufferSize: systemState.actionBuffer.length
+    });
+  }
 
   const data = {
     roomId: systemState.roomId,
@@ -144,12 +264,35 @@ const requestResync = () => {
   // Set a timeout to reset the resyncing flag
   setTimeout(() => {
     systemState.isResyncing = false;
-  }, 5000); // 5 second timeout
+    
+    // Trigger sync failed event if defined
+    if (typeof systemState.onSyncFailed === 'function') {
+      systemState.onSyncFailed('Timeout');
+    }
+    
+    // Log for debugging
+    if (systemState.debugMode) {
+      logSyncEvent('resync-timeout', { 
+        duration: Date.now() - systemState.resyncStartTime
+      });
+    }
+  }, 10000); // 10 second timeout (increased from 5s)
 };
 
 /**
  * Clears the action buffer
  */
 export const clearActionBuffer = () => {
+  // Clear any scheduled processing
+  if (systemState.bufferProcessTimeout) {
+    clearTimeout(systemState.bufferProcessTimeout);
+    systemState.bufferProcessTimeout = null;
+  }
+  
   systemState.actionBuffer = [];
+  
+  // Log for debugging
+  if (systemState.debugMode) {
+    logSyncEvent('clear-buffer', {});
+  }
 };

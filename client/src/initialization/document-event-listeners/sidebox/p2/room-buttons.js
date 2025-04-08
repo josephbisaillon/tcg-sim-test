@@ -4,6 +4,7 @@ import { cleanActionData } from '../../../../setup/general/clean-action-data.js'
 import { processAction } from '../../../../setup/general/process-action.js';
 import { handleSpectatorButtons } from '../../../../setup/spectator/handle-spectator-buttons.js';
 import { removeSyncIntervals } from '../../../socket-event-listeners/socket-event-listeners.js';
+import { updateURL } from '../../../url-persistence/url-persistence.js';
 
 export const initializeRoomButtons = () => {
   const roomIdInput = document.getElementById('roomIdInput');
@@ -83,11 +84,20 @@ export const initializeRoomButtons = () => {
     systemState.p2SelfUsername =
       nameInput.value.trim() !== '' ? nameInput.value : names[randomIndex];
     systemState.roomId = roomIdInput.value;
+    
+    // Check if this is a manual join (not from URL parameters)
+    const isManualJoin = !window.location.search.includes('room=');
+    
+    // Update URL with room and user information
+    const isSpectator = document.getElementById('spectatorModeCheckbox').checked;
+    updateURL(systemState.roomId, systemState.p2SelfUsername, isSpectator);
+    
     socket.emit(
       'joinGame',
       systemState.roomId,
       systemState.p2SelfUsername,
-      document.getElementById('spectatorModeCheckbox').checked
+      isSpectator,
+      false // This is a manual join, not a reconnection
     );
   });
 
@@ -123,6 +133,10 @@ export const initializeRoomButtons = () => {
       connectedRoom.style.display = 'none';
       systemState.isTwoPlayer = false;
       systemState.roomId = '';
+      
+      // Clear URL parameters
+      window.history.pushState({}, '', window.location.pathname);
+      
       cleanActionData('self');
       cleanActionData('opp');
       reset('opp', true, true, false, true);

@@ -43,6 +43,22 @@ export const systemState = {
   isResyncing: false,
   // Last time a full sync was performed
   lastFullSyncTime: Date.now(),
+  // Timeout ID for buffered actions processing
+  bufferProcessTimeout: null,
+  // Timeout for processing buffered actions (ms)
+  actionBufferTimeout: 500,
+  // Timestamp when resync started
+  resyncStartTime: null,
+  // Timeout ID for resync
+  resyncTimeout: null,
+  // Connection quality metrics
+  connectionQuality: null,
+  // Debug mode flag
+  debugMode: false,
+  // Event handlers for sync events
+  onSyncStart: null,
+  onSyncComplete: null,
+  onSyncFailed: null,
   isTwoPlayer: false,
   isReplay: false, // should be treated as false no matter what if isTwoPlayer is true
   replayActionData: [],

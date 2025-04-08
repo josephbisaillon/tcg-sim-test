@@ -2,7 +2,9 @@
 
 PTCG-sim is primarily built with JavaScript, using Node.js, Express, and Socket.io as the key frameworks. Socket.io is utilized for two-player functionality.
 
-## Running PTCG-sim Locally
+## Running PTCG-sim
+
+### Local Development
 
 Follow these steps to run PTCG-sim on your local machine:
 
@@ -13,6 +15,78 @@ Follow these steps to run PTCG-sim on your local machine:
 3. **WebSocket Connection:** The application now automatically uses the current window location for WebSocket connections. No manual configuration is needed as the base URL is dynamically determined.
 
 4. **Start Local Server:** Use nodemon to start running `server.js` locally. You can do this from the root directory by running `pnpm start`. This will load the repository with entry point being `front-end.js`. This file initializes various global variables, sets up the DOM, and registers socket event listeners.
+
+### Docker Deployment
+
+For production environments, we provide Docker support for easy deployment:
+
+1. **Prerequisites:**
+   - [Docker](https://docs.docker.com/get-docker/)
+   - [Docker Compose](https://docs.docker.com/compose/install/)
+
+2. **Quick Start:**
+   ```bash
+   # Clone the repository
+   git clone https://github.com/yourusername/ptcg-sim.git
+   cd ptcg-sim
+
+   # Build and start the containers
+   docker-compose up -d
+   ```
+
+3. **Access the Application:**
+   Open your browser and navigate to `http://localhost:4000`
+
+4. **Configuration:**
+   You can configure the application using environment variables:
+
+   - Create a `.env` file based on `.env.production`:
+     ```bash
+     cp .env.production .env
+     # Edit .env with your preferred settings
+     ```
+
+   - Or specify variables directly:
+     ```bash
+     PORT=8080 ADMIN_PASSWORD=securepassword docker-compose up -d
+     ```
+
+5. **Available Configuration Options:**
+
+   | Variable | Description | Default |
+   |----------|-------------|---------|
+   | PORT | The port the server will listen on | 4000 |
+   | HOST | The host address to bind to | 0.0.0.0 |
+   | ADMIN_USERNAME | Username for Socket.IO Admin UI | admin |
+   | ADMIN_PASSWORD | Password for Socket.IO Admin UI | changeThisInProduction |
+   | DB_MAX_SIZE_GB | Maximum size for the SQLite database | 15 |
+   | ENABLE_ANALYTICS | Enable/disable analytics tracking | false |
+   | ANALYTICS_SCRIPTS | JSON configuration for analytics services | {} |
+   | SNAPSHOT_RETENTION_DAYS | Number of days to keep game snapshots | 7 |
+   | SNAPSHOT_SAVE_INTERVAL | Interval in ms between auto-saves | 30000 |
+
+6. **Data Persistence:**
+   The application uses a Docker volume named `ptcg-sim-data` to persist the SQLite database between container restarts. You can manage this volume using standard Docker commands:
+
+   ```bash
+   # List volumes
+   docker volume ls
+
+   # Backup the database
+   docker run --rm -v ptcg-sim-data:/data -v $(pwd):/backup alpine tar -czvf /backup/ptcg-sim-data.tar.gz /data
+
+   # Restore from backup
+   docker run --rm -v ptcg-sim-data:/data -v $(pwd):/backup alpine sh -c "rm -rf /data/* && tar -xzvf /backup/ptcg-sim-data.tar.gz -C /"
+   ```
+
+7. **Health Checks:**
+   The Docker setup includes health checks to monitor the application's status. You can check the health status with:
+
+   ```bash
+   docker ps
+   ```
+
+   The STATUS column will show `healthy` if everything is working correctly.
 
 Feel free to explore the codebase and play around with the sim! I'm happy to answer any questions and I'm always open to suggestions :)
 
@@ -137,6 +211,51 @@ ANALYTICS_SCRIPTS='{"cloudflare":{"enabled":true,"token":"your-token-here"},"goo
    ```
 
 You can enable multiple services simultaneously by including them in the JSON configuration.
+
+### Game State Persistence
+
+The application includes comprehensive state persistence features that ensure game continuity:
+
+#### URL-Based Room Persistence
+
+1. **Shareable Game Links**: Players can share direct links to their game rooms
+2. **Persistent Sessions**: Users can refresh the page without losing their room connection
+3. **Improved Reconnection**: The application can properly rejoin rooms after page reloads
+4. **Reduced Connection Issues**: Cleaner reconnection process minimizes sync problems
+5. **Preserved Game State**: Board state is maintained when players refresh the page
+
+When a user joins a room, the URL is automatically updated with the room ID and username:
+```
+https://yourdomain.com/?room=roomID&user=username&spectator=false
+```
+
+#### Automatic Game State Saving
+
+The application now automatically saves the game state to the server:
+
+1. **Periodic Saving**: Game state is saved every 30 seconds during active play
+2. **Complete State Storage**: All actions, board positions, and game progress are preserved
+3. **Room-Based Storage**: Game states are associated with room IDs for easy retrieval
+4. **Seamless Recovery**: Players can rejoin a game even after both disconnect
+
+#### How It Works
+
+1. **During Play**:
+   - The game state is automatically saved to the database every 30 seconds
+   - Each save includes all actions, counters, and player information
+
+2. **On Reconnection**:
+   - The system checks if a saved state exists for the room
+   - If found, it restores the complete game state, including all cards and actions
+   - If not found, it falls back to the standard reconnection process
+
+3. **Connection Handling**:
+   - New players joining a room get a fresh board state
+   - Reconnecting players maintain the existing game state
+   - Other players in the room are not affected when someone refreshes their page
+   - Even if both players disconnect, the game can be resumed from the last saved state
+
+This robust persistence system ensures that games can continue smoothly despite connection issues, page refreshes, or even complete disconnections.
 
 ### Production Deployment Considerations
 

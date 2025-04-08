@@ -1,6 +1,8 @@
 import { systemState } from '../../front-end.js';
 import { acceptAction } from './accept-action.js';
 import { clearActionBuffer } from './action-buffer.js';
+import { logSyncEvent } from '../sync/sync-ui.js';
+import { completeResync } from './resync-actions.js';
 
 /**
  * Processes catch-up actions received from the other player during a resync
@@ -14,16 +16,40 @@ export const catchUpActions = (actionData) => {
   console.log(
     `Received ${actionData.length} actions, our counter: ${systemState.oppCounter}`
   );
+  
+  // Log for debugging
+  if (systemState.debugMode) {
+    logSyncEvent('catchup-received', { 
+      count: actionData.length,
+      currentCounter: systemState.oppCounter
+    });
+  }
 
   // Only process actions we don't already have
   const missingData = actionData.slice(systemState.oppCounter);
 
   if (missingData.length === 0) {
     console.log('No missing actions to process');
+    
+    // Log for debugging
+    if (systemState.debugMode) {
+      logSyncEvent('catchup-no-missing', {});
+    }
+    
+    // Complete the resync process
+    completeResync();
+    
     return;
   }
 
   console.log(`Processing ${missingData.length} missing actions`);
+  
+  // Log for debugging
+  if (systemState.debugMode) {
+    logSyncEvent('catchup-processing', { 
+      missingCount: missingData.length
+    });
+  }
 
   // First, update our internal state with all the missing actions
   missingData.forEach((entry) => {
@@ -71,10 +97,27 @@ export const catchUpActions = (actionData) => {
     actionsToApply = missingData.slice(
       missingData.length - mostRecentResetEntryIndex - 1
     );
+    
+    // Log for debugging
+    if (systemState.debugMode) {
+      logSyncEvent('catchup-reset-found', { 
+        index: mostRecentResetEntryIndex,
+        actionsToApply: actionsToApply.length
+      });
+    }
   } else if (mostRecentDeckDataIndex !== -1) {
     // If there's deck data, apply it first, then all actions after it
     const deckDataEntry =
       missingData[missingData.length - mostRecentDeckDataIndex - 1];
+    
+    // Log for debugging
+    if (systemState.debugMode) {
+      logSyncEvent('catchup-deckdata-found', { 
+        index: mostRecentDeckDataIndex,
+        action: deckDataEntry.action
+      });
+    }
+    
     acceptAction('opp', deckDataEntry.action, deckDataEntry.parameters);
 
     // Then apply all actions after the deck data
@@ -84,6 +127,13 @@ export const catchUpActions = (actionData) => {
   } else {
     // Otherwise, apply all missing actions
     actionsToApply = missingData;
+    
+    // Log for debugging
+    if (systemState.debugMode) {
+      logSyncEvent('catchup-all-actions', { 
+        count: actionsToApply.length
+      });
+    }
   }
 
   // Apply the actions in sequence
@@ -106,4 +156,87 @@ export const catchUpActions = (actionData) => {
   // Update the last sync time
   systemState.lastFullSyncTime = Date.now();
   console.log(`Catch-up complete, new counter: ${systemState.oppCounter}`);
+  
+  // Log for debugging
+  if (systemState.debugMode) {
+    logSyncEvent('catchup-complete', { 
+      newCounter: systemState.oppCounter,
+      actionsApplied: actionsToApply.length
+    });
+  }
+  
+  // Complete the resync process
+  completeResync();
 };
+
+/**
+ * Process a snapshot received during a sync
+ * @param {Object} data - The snapshot data
+ */
+export const processSnapshotSync = (data) => {
+  try {
+    // Import the snapshot restoration function
+    const { restoreGameFromSnapshot } = require('../snapshots/snapshot-restoration.js');
+    
+    // Log for debugging
+    if (systemState.debugMode) {
+      logSyncEvent('sync-with-snapshot', { 
+        snapshotSize: JSON.stringify(data.snapshot).length
+      });
+    }
+    
+    console.log('Restoring game state from sync snapshot');
+    
+    // Restore from the snapshot
+    const success = restoreGameFromSnapshot(data.snapshot);
+    
+    if (success) {
+      console.log('Successfully restored game state from snapshot');
+      
+      // Log for debugging
+      if (systemState.debugMode) {
+        logSyncEvent('snapshot-restore-success', {});
+      }
+      
+      // Complete the resync process
+      completeResync();
+    } else {
+      console.error('Failed to restore game state from snapshot');
+      
+      // Log for debugging
+      if (systemState.debugMode) {
+        logSyncEvent('snapshot-restore-failed', {});
+      }
+      
+      // Request a traditional resync as fallback
+      requestFallbackResync();
+    }
+  } catch (error) {
+    console.error('Error processing snapshot sync:', error);
+    
+    // Log for debugging
+    if (systemState.debugMode) {
+      logSyncEvent('snapshot-restore-error', { 
+        error: error.message
+      });
+    }
+    
+    // Request a traditional resync as fallback
+    requestFallbackResync();
+  }
+};
+
+/**
+ * Request a fallback resync using the traditional action-based method
+ */
+function requestFallbackResync() {
+  // Request a traditional resync
+  const data = {
+    roomId: systemState.roomId,
+    counter: systemState.oppCounter,
+    fallback: true
+  };
+  
+  console.log('Requesting fallback action-based resync');
+  socket.emit('resyncActions', data);
+}
