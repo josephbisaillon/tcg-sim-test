@@ -1,0 +1,197 @@
+/* Bench Zone Component Styles */
+
+.bench-zone {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3);
+    border-radius: var(--border-radius-md);
+    background-color: var(--color-zone-bench-bg, rgba(76, 175, 80, 0.1));
+    border: 2px solid var(--color-zone-bench, #4caf50);
+    transition: all var(--transition-normal);
+    position: relative;
+    width: 100%;
+    min-height: 120px;
+}
+
+/* Cards container */
+.bench-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    min-height: 80px;
+}
+
+/* Individual card container */
+.bench-card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    transition: transform var(--transition-fast);
+}
+
+/* Placeholder container */
+.bench-card-placeholder-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.5;
+    transition: opacity var(--transition-normal);
+}
+
+/* Zone label */
+.bench-zone-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    text-align: center;
+    margin-top: var(--spacing-1);
+}
+
+/* Opponent's bench zone */
+.bench-zone-opponent {
+    background-color: var(--color-zone-bench-opponent-bg, rgba(76, 175, 80, 0.05));
+    border-color: var(--color-zone-bench-opponent, #2e7d32);
+}
+
+/* Empty zone styling */
+.bench-zone-empty {
+    background-color: var(--color-zone-bench-empty-bg, rgba(76, 175, 80, 0.05));
+    border-style: dashed;
+}
+
+/* Drop target styling */
+.bench-zone-drop-target {
+    background-color: var(--color-zone-bench-drop-bg, rgba(76, 175, 80, 0.2));
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px var(--color-primary), var(--shadow-md);
+}
+
+/* Hover effect when zone is a drop target */
+.bench-zone:not(.bench-zone-opponent)[data-droppable="true"]:hover {
+    background-color: var(--color-zone-bench-hover-bg, rgba(76, 175, 80, 0.15));
+    border-color: var(--color-primary-light);
+    cursor: pointer;
+}
+
+/* Hover effect for cards */
+.bench-card-container:hover {
+    transform: translateY(-4px);
+    z-index: 10;
+}
+
+/* Animation for when a card is placed */
+@keyframes card-placed {
+    0% {
+        transform: scale(0.9);
+        opacity: 0.7;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.bench-card-container.card-just-placed {
+    animation: card-placed 0.5s forwards;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .bench-zone {
+        padding: var(--spacing-2);
+        min-height: 100px;
+    }
+
+    .bench-cards-container {
+        min-height: 60px;
+        gap: var(--spacing-1);
+    }
+}
+
+/* Accessibility focus styles */
+.bench-zone:focus-within {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-primary), var(--shadow-md);
+}
+
+/* Status indicators container */
+.bench-card-status-indicators {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    z-index: 10;
+}
+
+/* Individual status indicator */
+.bench-card-status-indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-primary);
+}
+
+/* Damage counter */
+.bench-card-damage-counter {
+    background-color: var(--color-danger);
+    color: white;
+}
+
+/* Energy counter */
+.bench-card-energy-counter {
+    background-color: var(--color-info);
+    color: white;
+}
+
+/* Bench is full indicator */
+.bench-zone[data-full="true"] .bench-zone-label {
+    color: var(--color-danger);
+    font-weight: bold;
+}
+
+/* Bench is almost full indicator */
+.bench-zone[data-almost-full="true"] .bench-zone-label {
+    color: var(--color-warning);
+}
+
+/* Scrollable bench for many cards */
+@media (min-width: 769px) {
+    .bench-cards-container {
+        overflow-x: auto;
+        padding-bottom: var(--spacing-2);
+        flex-wrap: nowrap;
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-scrollbar) transparent;
+    }
+
+    .bench-cards-container::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .bench-cards-container::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .bench-cards-container::-webkit-scrollbar-thumb {
+        background-color: var(--color-scrollbar);
+        border-radius: 6px;
+    }
+}

@@ -1,0 +1,118 @@
+/* Stadium Zone Component Styles */
+
+.stadium-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 180px;
+    min-height: 180px;
+    padding: var(--spacing-2);
+    border-radius: var(--border-radius-lg);
+    background-color: rgba(var(--color-background-rgb), 0.5);
+    position: relative;
+    transition: all var(--transition-normal);
+}
+
+/* Stadium card container */
+.stadium-card-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+/* Stadium placeholder container */
+.stadium-placeholder-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    opacity: 0.5;
+}
+
+/* Stadium zone label */
+.stadium-zone-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin-top: var(--spacing-1);
+    text-align: center;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Empty stadium zone */
+.stadium-zone-empty {
+    background-color: rgba(var(--color-background-rgb), 0.3);
+}
+
+/* Drop target styling */
+.stadium-zone-drop-target {
+    box-shadow: 0 0 0 2px var(--color-primary);
+    background-color: rgba(var(--color-primary-rgb), 0.1);
+}
+
+/* Hover effects */
+.stadium-zone:hover {
+    background-color: rgba(var(--color-background-rgb), 0.7);
+}
+
+.stadium-zone-empty:hover {
+    background-color: rgba(var(--color-background-rgb), 0.5);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .stadium-zone {
+        max-width: 150px;
+        min-height: 150px;
+    }
+}
+
+@media (max-width: 768px) {
+    .stadium-zone {
+        max-width: 120px;
+        min-height: 120px;
+    }
+
+    .stadium-zone-label {
+        font-size: var(--font-size-xs);
+    }
+}
+
+/* Accessibility focus styles */
+.stadium-zone:focus-within {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-focus);
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    .stadium-zone {
+        background-color: rgba(var(--color-background-dark-rgb), 0.5);
+    }
+
+    .stadium-zone-empty {
+        background-color: rgba(var(--color-background-dark-rgb), 0.3);
+    }
+
+    .stadium-zone:hover {
+        background-color: rgba(var(--color-background-dark-rgb), 0.7);
+    }
+
+    .stadium-zone-empty:hover {
+        background-color: rgba(var(--color-background-dark-rgb), 0.5);
+    }
+
+    .stadium-zone-label {
+        color: var(--color-text-secondary-dark);
+    }
+}

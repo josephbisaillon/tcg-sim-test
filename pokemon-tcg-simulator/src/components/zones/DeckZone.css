@@ -1,0 +1,210 @@
+/* Deck Zone Component Styles */
+
+.deck-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3);
+    border-radius: var(--border-radius-md);
+    background-color: var(--color-zone-deck-bg, rgba(33, 150, 243, 0.1));
+    border: 2px solid var(--color-zone-deck, #2196f3);
+    transition: all var(--transition-normal);
+    position: relative;
+    width: fit-content;
+    min-width: 120px;
+    min-height: 180px;
+}
+
+/* Cards container */
+.deck-cards-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 140px;
+}
+
+/* Individual card in the deck */
+.deck-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: transform var(--transition-fast);
+}
+
+/* Placeholder container */
+.deck-placeholder-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    min-height: 140px;
+    opacity: 0.7;
+}
+
+/* Zone label */
+.deck-zone-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    text-align: center;
+    margin-top: var(--spacing-1);
+}
+
+/* Card count badge */
+.deck-card-count {
+    position: absolute;
+    top: var(--spacing-2);
+    right: var(--spacing-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: var(--color-primary);
+    color: white;
+    font-size: var(--font-size-xs);
+    font-weight: bold;
+    box-shadow: var(--shadow-sm);
+    z-index: 10;
+}
+
+/* Opponent's deck zone */
+.deck-zone-opponent {
+    background-color: var(--color-zone-deck-opponent-bg, rgba(33, 150, 243, 0.05));
+    border-color: var(--color-zone-deck-opponent, #1976d2);
+}
+
+/* Empty zone styling */
+.deck-zone-empty {
+    background-color: var(--color-zone-deck-empty-bg, rgba(33, 150, 243, 0.05));
+    border-style: dashed;
+}
+
+/* Drop target styling */
+.deck-zone-drop-target {
+    background-color: var(--color-zone-deck-drop-bg, rgba(33, 150, 243, 0.2));
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px var(--color-primary), var(--shadow-md);
+    transform: scale(1.02);
+}
+
+/* Hover effect when zone is a drop target */
+.deck-zone:not(.deck-zone-opponent)[data-droppable="true"]:hover {
+    background-color: var(--color-zone-deck-hover-bg, rgba(33, 150, 243, 0.15));
+    border-color: var(--color-primary-light);
+    cursor: pointer;
+}
+
+/* Hover effect for the deck */
+.deck-zone:not(.deck-zone-empty):hover .deck-cards-container {
+    transform: translateY(-4px);
+}
+
+/* Animation for when a card is added to the deck */
+@keyframes card-added {
+    0% {
+        transform: scale(0.9) translateY(20px);
+        opacity: 0.7;
+    }
+
+    50% {
+        transform: scale(1.05) translateY(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+.deck-card.card-just-added {
+    animation: card-added 0.5s forwards;
+}
+
+/* Animation for when a card is drawn from the deck */
+@keyframes card-drawn {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(0.8) translateY(-20px);
+        opacity: 0;
+    }
+}
+
+.deck-card.card-being-drawn {
+    animation: card-drawn 0.3s forwards;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .deck-zone {
+        padding: var(--spacing-2);
+        min-width: 100px;
+        min-height: 150px;
+    }
+
+    .deck-cards-container,
+    .deck-placeholder-container {
+        min-height: 120px;
+    }
+
+    .deck-card-count {
+        width: 20px;
+        height: 20px;
+        font-size: calc(var(--font-size-xs) - 1px);
+    }
+}
+
+/* Accessibility focus styles */
+.deck-zone:focus-within {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-primary), var(--shadow-md);
+}
+
+/* Empty deck warning */
+.deck-zone.deck-zone-empty .deck-zone-label {
+    color: var(--color-danger);
+}
+
+/* Low card count warning */
+.deck-zone[data-low-cards="true"] .deck-card-count {
+    background-color: var(--color-warning);
+}
+
+/* Shuffle animation */
+@keyframes shuffle {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(-5deg);
+    }
+
+    50% {
+        transform: rotate(0deg);
+    }
+
+    75% {
+        transform: rotate(5deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+.deck-zone.shuffling .deck-cards-container {
+    animation: shuffle 0.5s ease-in-out;
+}

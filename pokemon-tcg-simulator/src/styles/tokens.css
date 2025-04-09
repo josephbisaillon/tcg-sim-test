@@ -1,0 +1,223 @@
+/**
+ * Design Tokens for Pokémon TCG Simulator
+ * 
+ * This file contains all the design tokens used throughout the application.
+ * These tokens ensure consistency in the UI and make it easier to update
+ * the design system in one place.
+ */
+
+:root {
+    /* 
+     * Color Palette
+     * Based on the Pokémon TCG color scheme with energy types
+     */
+
+    /* Primary Colors */
+    --color-primary: #3F51B5;
+    /* Deep blue - Main app color */
+    --color-primary-light: #7986CB;
+    /* Lighter blue for hover states */
+    --color-primary-dark: #303F9F;
+    /* Darker blue for active states */
+
+    /* Secondary Colors */
+    --color-secondary: #00BFA5;
+    /* Teal green - Secondary actions */
+    --color-secondary-light: #5DF2D6;
+    /* Lighter teal for hover states */
+    --color-secondary-dark: #008E76;
+    /* Darker teal for active states */
+
+    /* Accent Colors */
+    --color-accent: #7B1FA2;
+    /* Purple - Accent elements */
+    --color-accent-light: #AE52D4;
+    /* Lighter purple for hover states */
+    --color-accent-dark: #4A0072;
+    /* Darker purple for active states */
+
+    /* Feedback Colors */
+    --color-success: #00C853;
+    /* Green - Success states */
+    --color-warning: #FFD600;
+    /* Yellow - Warning states */
+    --color-danger: #F44336;
+    /* Red - Error states */
+    --color-info: #2196F3;
+    /* Blue - Information states */
+
+    /* Neutral Colors */
+    --color-background: #FFFFFF;
+    /* White - Main background */
+    --color-surface: #F5F5F5;
+    /* Light gray - Card backgrounds */
+    --color-text-primary: #212121;
+    /* Dark gray - Primary text */
+    --color-text-secondary: #757575;
+    /* Medium gray - Secondary text */
+    --color-text-disabled: #9E9E9E;
+    /* Light gray - Disabled text */
+    --color-border: #E0E0E0;
+    /* Light gray - Borders */
+
+    /* Pokémon Energy Type Colors */
+    --color-energy-grass: #7AC74C;
+    /* Grass type */
+    --color-energy-fire: #EE8130;
+    /* Fire type */
+    --color-energy-water: #6390F0;
+    /* Water type */
+    --color-energy-lightning: #F7D02C;
+    /* Electric type */
+    --color-energy-psychic: #F95587;
+    /* Psychic type */
+    --color-energy-fighting: #C22E28;
+    /* Fighting type */
+    --color-energy-darkness: #705746;
+    /* Dark type */
+    --color-energy-metal: #B7B7CE;
+    /* Steel type */
+    --color-energy-fairy: #D685AD;
+    /* Fairy type */
+    --color-energy-dragon: #6F35FC;
+    /* Dragon type */
+    --color-energy-colorless: #A8A77A;
+    /* Normal/Colorless type */
+
+    /* Game Zone Colors */
+    --color-zone-prize: var(--color-success);
+    --color-zone-bench: var(--color-info);
+    --color-zone-deck: var(--color-primary);
+    --color-zone-discard: var(--color-accent);
+    --color-zone-stadium: var(--color-energy-fairy);
+
+    /* 
+     * Typography
+     */
+
+    /* Font Families */
+    --font-family-primary: 'Roboto', 'Arial', sans-serif;
+    --font-family-heading: 'Montserrat', 'Roboto', 'Arial', sans-serif;
+    --font-family-mono: 'Roboto Mono', monospace;
+
+    /* Font Sizes */
+    --font-size-xs: 0.75rem;
+    /* 12px */
+    --font-size-sm: 0.875rem;
+    /* 14px */
+    --font-size-base: 1rem;
+    /* 16px */
+    --font-size-md: 1.125rem;
+    /* 18px */
+    --font-size-lg: 1.25rem;
+    /* 20px */
+    --font-size-xl: 1.5rem;
+    /* 24px */
+    --font-size-2xl: 1.875rem;
+    /* 30px */
+    --font-size-3xl: 2.25rem;
+    /* 36px */
+    --font-size-4xl: 3rem;
+    /* 48px */
+
+    /* Font Weights */
+    --font-weight-light: 300;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-bold: 700;
+
+    /* Line Heights */
+    --line-height-tight: 1.1;
+    --line-height-snug: 1.25;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.75;
+
+    /* Letter Spacing */
+    --letter-spacing-tight: -0.025em;
+    --letter-spacing-normal: 0;
+    --letter-spacing-wide: 0.025em;
+    --letter-spacing-wider: 0.05em;
+
+    /* 
+     * Spacing
+     */
+    --spacing-0: 0;
+    --spacing-1: 0.25rem;
+    /* 4px */
+    --spacing-2: 0.5rem;
+    /* 8px */
+    --spacing-3: 0.75rem;
+    /* 12px */
+    --spacing-4: 1rem;
+    /* 16px */
+    --spacing-5: 1.25rem;
+    /* 20px */
+    --spacing-6: 1.5rem;
+    /* 24px */
+    --spacing-8: 2rem;
+    /* 32px */
+    --spacing-10: 2.5rem;
+    /* 40px */
+    --spacing-12: 3rem;
+    /* 48px */
+    --spacing-16: 4rem;
+    /* 64px */
+    --spacing-20: 5rem;
+    /* 80px */
+    --spacing-24: 6rem;
+    /* 96px */
+
+    /* 
+     * Borders & Shadows
+     */
+    --border-radius-sm: 0.125rem;
+    /* 2px */
+    --border-radius-md: 0.25rem;
+    /* 4px */
+    --border-radius-lg: 0.5rem;
+    /* 8px */
+    --border-radius-xl: 1rem;
+    /* 16px */
+    --border-radius-full: 9999px;
+
+    --border-width-thin: 1px;
+    --border-width-medium: 2px;
+    --border-width-thick: 4px;
+
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+    /* 
+     * Transitions & Animations
+     */
+    --transition-fast: 150ms;
+    --transition-normal: 300ms;
+    --transition-slow: 500ms;
+    --transition-timing-ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-timing-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    /* 
+     * Z-index
+     */
+    --z-index-dropdown: 1000;
+    --z-index-sticky: 1100;
+    --z-index-fixed: 1200;
+    --z-index-modal-backdrop: 1300;
+    --z-index-modal: 1400;
+    --z-index-popover: 1500;
+    --z-index-tooltip: 1600;
+}
+
+/* Dark Theme Variables (for future implementation) */
+.dark-theme {
+    --color-background: #121212;
+    --color-surface: #1E1E1E;
+    --color-text-primary: #E0E0E0;
+    --color-text-secondary: #A0A0A0;
+    --color-text-disabled: #6C6C6C;
+    --color-border: #2C2C2C;
+
+    /* Adjust other colors as needed for dark theme */
+}

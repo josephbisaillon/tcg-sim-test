@@ -1,0 +1,111 @@
+/* Game Board Component Styles */
+
+.game-board {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    background-color: var(--color-background);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Opponent's field section */
+.game-board-opponent {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    position: relative;
+    z-index: 1;
+}
+
+/* Center area for stadium and special status zones */
+.game-board-center {
+    width: 100%;
+    min-height: 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    background-color: var(--color-background-alt);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    padding: 0 var(--spacing-4);
+    gap: var(--spacing-2);
+}
+
+/* Player's field section */
+.game-board-player {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    position: relative;
+    z-index: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .game-board-center {
+        min-height: 60px;
+        padding: 0 var(--spacing-3);
+    }
+}
+
+@media (max-width: 768px) {
+    .game-board-center {
+        min-height: 40px;
+        padding: 0 var(--spacing-2);
+        gap: var(--spacing-1);
+    }
+}
+
+@media (max-width: 480px) {
+    .game-board-center {
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: var(--spacing-1);
+        min-height: 120px;
+    }
+}
+
+/* Animations */
+@keyframes highlight-board {
+    0% {
+        box-shadow: inset 0 0 0 2px transparent;
+    }
+
+    50% {
+        box-shadow: inset 0 0 0 2px var(--color-primary);
+    }
+
+    100% {
+        box-shadow: inset 0 0 0 2px transparent;
+    }
+}
+
+.game-board-active {
+    animation: highlight-board 1s ease-in-out;
+}
+
+/* Accessibility focus styles */
+.game-board:focus-within {
+    outline: none;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    .game-board {
+        background-color: var(--color-background-dark);
+    }
+
+    .game-board-center {
+        background-color: var(--color-background-alt-dark);
+        border-color: var(--color-border-dark);
+    }
+}

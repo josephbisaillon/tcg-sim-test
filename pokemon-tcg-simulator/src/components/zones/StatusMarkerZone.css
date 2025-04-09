@@ -1,0 +1,216 @@
+/* Status Marker Zone Component Styles */
+
+.status-marker-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-2);
+    border-radius: var(--border-radius-lg);
+    background-color: rgba(var(--color-background-rgb), 0.5);
+    position: relative;
+    transition: all var(--transition-normal);
+}
+
+/* Status marker container */
+.status-marker-container {
+    display: flex;
+    gap: var(--spacing-2);
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+/* Individual status marker */
+.status-marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    border-radius: var(--border-radius-md);
+    border: 2px solid var(--color-border);
+    background-color: var(--color-background);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    padding: var(--spacing-1);
+    position: relative;
+    overflow: hidden;
+}
+
+.status-marker:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.status-marker:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status-marker:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Status marker icon */
+.status-marker-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+    margin-bottom: var(--spacing-1);
+}
+
+/* Status marker label */
+.status-marker-label {
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    line-height: 1;
+}
+
+/* Status marker state */
+.status-marker-state {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-top: var(--spacing-1);
+}
+
+/* VSTAR marker */
+.status-marker-vstar {
+    border-color: var(--color-primary);
+    background-color: rgba(var(--color-primary-rgb), 0.1);
+}
+
+.status-marker-vstar .status-marker-icon {
+    color: var(--color-primary);
+}
+
+/* GX marker */
+.status-marker-gx {
+    border-color: var(--color-secondary);
+    background-color: rgba(var(--color-secondary-rgb), 0.1);
+}
+
+.status-marker-gx .status-marker-icon {
+    color: var(--color-secondary);
+}
+
+/* ACE SPEC marker */
+.status-marker-ace-spec {
+    border-color: var(--color-accent);
+    background-color: rgba(var(--color-accent-rgb), 0.1);
+}
+
+.status-marker-ace-spec .status-marker-icon {
+    color: var(--color-accent);
+}
+
+/* Used marker state */
+.status-marker-used {
+    opacity: 0.6;
+    background-color: rgba(var(--color-background-rgb), 0.8);
+    border-color: var(--color-border);
+}
+
+.status-marker-used .status-marker-icon,
+.status-marker-used .status-marker-label,
+.status-marker-used .status-marker-state {
+    color: var(--color-text-secondary);
+}
+
+.status-marker-used::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(45deg, rgba(0, 0, 0, 0.1) 25%, transparent 25%, transparent 50%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.1) 75%, transparent 75%, transparent);
+    background-size: 8px 8px;
+    opacity: 0.3;
+}
+
+/* Opponent's status markers */
+.status-marker-zone-opponent .status-marker {
+    transform: rotate(180deg);
+}
+
+.status-marker-zone-opponent .status-marker:hover {
+    transform: rotate(180deg) translateY(-2px);
+}
+
+.status-marker-zone-opponent .status-marker:active {
+    transform: rotate(180deg) translateY(0);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .status-marker {
+        width: 50px;
+        height: 50px;
+    }
+
+    .status-marker-icon {
+        font-size: 1.25rem;
+    }
+
+    .status-marker-label {
+        font-size: 0.65rem;
+    }
+
+    .status-marker-state {
+        font-size: 0.55rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .status-marker-container {
+        gap: var(--spacing-1);
+    }
+
+    .status-marker {
+        width: 40px;
+        height: 40px;
+    }
+
+    .status-marker-icon {
+        font-size: 1rem;
+        margin-bottom: 2px;
+    }
+
+    .status-marker-label {
+        font-size: 0.6rem;
+    }
+
+    .status-marker-state {
+        font-size: 0.5rem;
+        margin-top: 2px;
+    }
+}
+
+/* Accessibility focus styles */
+.status-marker:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-focus);
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    .status-marker {
+        background-color: var(--color-background-dark);
+        color: var(--color-text-dark);
+    }
+
+    .status-marker-used {
+        background-color: rgba(var(--color-background-dark-rgb), 0.8);
+    }
+
+    .status-marker-used .status-marker-icon,
+    .status-marker-used .status-marker-label,
+    .status-marker-used .status-marker-state {
+        color: var(--color-text-secondary-dark);
+    }
+}

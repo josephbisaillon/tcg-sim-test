@@ -1,0 +1,530 @@
+/* 
+ * Animation Utilities
+ * Reusable animations and transitions for the Pokémon TCG Simulator
+ */
+
+:root {
+    /* Animation durations */
+    --animation-duration-fast: 150ms;
+    --animation-duration-normal: 300ms;
+    --animation-duration-slow: 500ms;
+    --animation-duration-slower: 800ms;
+
+    /* Animation timing functions */
+    --animation-timing-ease: ease;
+    --animation-timing-ease-in: ease-in;
+    --animation-timing-ease-out: ease-out;
+    --animation-timing-ease-in-out: ease-in-out;
+    --animation-timing-linear: linear;
+    --animation-timing-bounce: cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    --animation-timing-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+
+    /* Animation delays */
+    --animation-delay-none: 0ms;
+    --animation-delay-short: 50ms;
+    --animation-delay-medium: 100ms;
+    --animation-delay-long: 200ms;
+}
+
+/* Transition Utilities */
+.transition-none {
+    transition: none !important;
+}
+
+.transition-all {
+    transition-property: all;
+    transition-timing-function: var(--animation-timing-ease);
+    transition-duration: var(--animation-duration-normal);
+}
+
+.transition-colors {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: var(--animation-timing-ease);
+    transition-duration: var(--animation-duration-normal);
+}
+
+.transition-opacity {
+    transition-property: opacity;
+    transition-timing-function: var(--animation-timing-ease);
+    transition-duration: var(--animation-duration-normal);
+}
+
+.transition-transform {
+    transition-property: transform;
+    transition-timing-function: var(--animation-timing-ease);
+    transition-duration: var(--animation-duration-normal);
+}
+
+.transition-shadow {
+    transition-property: box-shadow;
+    transition-timing-function: var(--animation-timing-ease);
+    transition-duration: var(--animation-duration-normal);
+}
+
+/* Duration Modifiers */
+.duration-fast {
+    transition-duration: var(--animation-duration-fast);
+}
+
+.duration-normal {
+    transition-duration: var(--animation-duration-normal);
+}
+
+.duration-slow {
+    transition-duration: var(--animation-duration-slow);
+}
+
+.duration-slower {
+    transition-duration: var(--animation-duration-slower);
+}
+
+/* Timing Function Modifiers */
+.ease {
+    transition-timing-function: var(--animation-timing-ease);
+}
+
+.ease-in {
+    transition-timing-function: var(--animation-timing-ease-in);
+}
+
+.ease-out {
+    transition-timing-function: var(--animation-timing-ease-out);
+}
+
+.ease-in-out {
+    transition-timing-function: var(--animation-timing-ease-in-out);
+}
+
+.linear {
+    transition-timing-function: var(--animation-timing-linear);
+}
+
+.bounce {
+    transition-timing-function: var(--animation-timing-bounce);
+}
+
+.elastic {
+    transition-timing-function: var(--animation-timing-elastic);
+}
+
+/* Delay Modifiers */
+.delay-none {
+    transition-delay: var(--animation-delay-none);
+}
+
+.delay-short {
+    transition-delay: var(--animation-delay-short);
+}
+
+.delay-medium {
+    transition-delay: var(--animation-delay-medium);
+}
+
+.delay-long {
+    transition-delay: var(--animation-delay-long);
+}
+
+/* Keyframe Animations */
+
+/* Fade In */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn var(--animation-duration-normal) var(--animation-timing-ease-out) forwards;
+}
+
+/* Fade Out */
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+.animate-fade-out {
+    animation: fadeOut var(--animation-duration-normal) var(--animation-timing-ease-in) forwards;
+}
+
+/* Slide In From Top */
+@keyframes slideInFromTop {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.animate-slide-in-top {
+    animation: slideInFromTop var(--animation-duration-normal) var(--animation-timing-ease-out) forwards;
+}
+
+/* Slide In From Bottom */
+@keyframes slideInFromBottom {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.animate-slide-in-bottom {
+    animation: slideInFromBottom var(--animation-duration-normal) var(--animation-timing-ease-out) forwards;
+}
+
+/* Slide In From Left */
+@keyframes slideInFromLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.animate-slide-in-left {
+    animation: slideInFromLeft var(--animation-duration-normal) var(--animation-timing-ease-out) forwards;
+}
+
+/* Slide In From Right */
+@keyframes slideInFromRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.animate-slide-in-right {
+    animation: slideInFromRight var(--animation-duration-normal) var(--animation-timing-ease-out) forwards;
+}
+
+/* Scale In */
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.animate-scale-in {
+    animation: scaleIn var(--animation-duration-normal) var(--animation-timing-bounce) forwards;
+}
+
+/* Scale Out */
+@keyframes scaleOut {
+    from {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    to {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+.animate-scale-out {
+    animation: scaleOut var(--animation-duration-normal) var(--animation-timing-ease-in) forwards;
+}
+
+/* Rotate */
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-rotate {
+    animation: rotate var(--animation-duration-slow) var(--animation-timing-linear) infinite;
+}
+
+/* Pulse */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.animate-pulse {
+    animation: pulse var(--animation-duration-slow) var(--animation-timing-ease-in-out) infinite;
+}
+
+/* Shake */
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        transform: translateX(-5px);
+    }
+
+    20%,
+    40%,
+    60%,
+    80% {
+        transform: translateX(5px);
+    }
+}
+
+.animate-shake {
+    animation: shake var(--animation-duration-normal) var(--animation-timing-ease-in-out);
+}
+
+/* Bounce */
+@keyframes bounce {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-20px);
+    }
+
+    60% {
+        transform: translateY(-10px);
+    }
+}
+
+.animate-bounce {
+    animation: bounce var(--animation-duration-slow) var(--animation-timing-ease-in-out);
+}
+
+/* Flip */
+@keyframes flip {
+    0% {
+        transform: perspective(400px) rotateY(0);
+    }
+
+    100% {
+        transform: perspective(400px) rotateY(180deg);
+    }
+}
+
+.animate-flip {
+    animation: flip var(--animation-duration-normal) var(--animation-timing-ease-in-out);
+    backface-visibility: hidden;
+}
+
+/* Card Draw Animation */
+@keyframes cardDraw {
+    0% {
+        transform: translateY(100%) scale(0.8);
+        opacity: 0;
+    }
+
+    60% {
+        transform: translateY(-10%) scale(1.05);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.animate-card-draw {
+    animation: cardDraw var(--animation-duration-normal) var(--animation-timing-bounce) forwards;
+}
+
+/* Card Shuffle Animation */
+@keyframes cardShuffle {
+    0% {
+        transform: translateX(0) rotate(0);
+    }
+
+    25% {
+        transform: translateX(-5px) rotate(-5deg);
+    }
+
+    50% {
+        transform: translateX(5px) rotate(5deg);
+    }
+
+    75% {
+        transform: translateX(-5px) rotate(-5deg);
+    }
+
+    100% {
+        transform: translateX(0) rotate(0);
+    }
+}
+
+.animate-card-shuffle {
+    animation: cardShuffle var(--animation-duration-normal) var(--animation-timing-ease-in-out);
+}
+
+/* Card Flip Animation */
+@keyframes cardFlip {
+    0% {
+        transform: rotateY(0deg);
+    }
+
+    100% {
+        transform: rotateY(180deg);
+    }
+}
+
+.animate-card-flip {
+    animation: cardFlip var(--animation-duration-normal) var(--animation-timing-ease-in-out);
+    backface-visibility: hidden;
+}
+
+/* Card Attack Animation */
+@keyframes cardAttack {
+    0% {
+        transform: translateX(0) scale(1);
+    }
+
+    10% {
+        transform: translateX(-5px) scale(0.95);
+    }
+
+    30% {
+        transform: translateX(5px) scale(1.05);
+    }
+
+    50% {
+        transform: translateX(20px) scale(1.1);
+    }
+
+    80% {
+        transform: translateX(-5px) scale(1.05);
+    }
+
+    100% {
+        transform: translateX(0) scale(1);
+    }
+}
+
+.animate-card-attack {
+    animation: cardAttack var(--animation-duration-normal) var(--animation-timing-bounce);
+}
+
+/* Coin Flip Animation */
+@keyframes coinFlip {
+    0% {
+        transform: rotateX(0) rotateY(0);
+    }
+
+    100% {
+        transform: rotateX(1080deg) rotateY(1080deg);
+    }
+}
+
+.animate-coin-flip {
+    animation: coinFlip var(--animation-duration-slow) var(--animation-timing-ease-in-out);
+    transform-style: preserve-3d;
+}
+
+/* Energy Attach Animation */
+@keyframes energyAttach {
+    0% {
+        transform: translateY(-20px) scale(1.2);
+        opacity: 0;
+    }
+
+    70% {
+        transform: translateY(5px) scale(0.9);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.animate-energy-attach {
+    animation: energyAttach var(--animation-duration-normal) var(--animation-timing-bounce) forwards;
+}
+
+/* Damage Counter Animation */
+@keyframes damageCounter {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.animate-damage-counter {
+    animation: damageCounter var(--animation-duration-normal) var(--animation-timing-bounce) forwards;
+}
+
+/* Animation Utilities for Reduced Motion Preferences */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

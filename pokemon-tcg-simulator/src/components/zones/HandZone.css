@@ -1,0 +1,253 @@
+/* Hand Zone Component Styles */
+
+.hand-zone {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 100%;
+    min-height: 180px;
+    padding: var(--spacing-3);
+    border-radius: var(--border-radius-md);
+    background-color: var(--color-zone-hand-bg, rgba(156, 39, 176, 0.1));
+    border: 2px solid var(--color-zone-hand, #9c27b0);
+    transition: all var(--transition-normal);
+}
+
+/* Cards container with horizontal scrolling */
+.hand-cards-container {
+    display: flex;
+    width: 100%;
+    min-height: 140px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-scrollbar) transparent;
+    position: relative;
+    padding: var(--spacing-2) var(--spacing-4);
+}
+
+/* Scrollbar styling for Webkit browsers */
+.hand-cards-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.hand-cards-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.hand-cards-container::-webkit-scrollbar-thumb {
+    background-color: var(--color-scrollbar);
+    border-radius: 6px;
+}
+
+/* Inner container for cards */
+.hand-cards-inner {
+    display: flex;
+    position: relative;
+    min-width: 100%;
+    height: 100%;
+    padding: var(--spacing-2) var(--spacing-4);
+    justify-content: center;
+    align-items: center;
+}
+
+/* Individual card container */
+.hand-card-container {
+    position: relative;
+    margin: 0 calc(var(--spacing-1) * -1);
+    transition: transform var(--transition-fast), z-index 0.1s;
+    transform-origin: bottom center;
+}
+
+/* Hover effect for cards */
+.hand-card-container:hover {
+    transform: translateY(-20px) scale(1.05) !important;
+    z-index: 100 !important;
+}
+
+/* Empty hand message */
+.hand-zone-empty-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    min-height: 140px;
+    color: var(--color-text-secondary);
+    font-style: italic;
+}
+
+/* Zone label */
+.hand-zone-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    text-align: center;
+    margin-top: var(--spacing-2);
+}
+
+/* Scroll buttons */
+.hand-zone-scroll-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-fast);
+    font-weight: bold;
+}
+
+.hand-zone-scroll-button:hover {
+    background-color: var(--color-primary-light);
+    color: var(--color-text-on-primary);
+}
+
+.hand-zone-scroll-button:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.hand-zone-scroll-left {
+    left: var(--spacing-2);
+}
+
+.hand-zone-scroll-right {
+    right: var(--spacing-2);
+}
+
+/* Opponent's hand zone */
+.hand-zone-opponent {
+    background-color: var(--color-zone-hand-opponent-bg, rgba(156, 39, 176, 0.05));
+    border-color: var(--color-zone-hand-opponent, #7b1fa2);
+}
+
+/* Empty zone styling */
+.hand-zone-empty {
+    background-color: var(--color-zone-hand-empty-bg, rgba(156, 39, 176, 0.05));
+    border-style: dashed;
+}
+
+/* Drop target styling */
+.hand-zone-drop-target {
+    background-color: var(--color-zone-hand-drop-bg, rgba(156, 39, 176, 0.2));
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px var(--color-primary), var(--shadow-md);
+}
+
+/* Hover effect when zone is a drop target */
+.hand-zone:not(.hand-zone-opponent)[data-droppable="true"]:hover {
+    background-color: var(--color-zone-hand-hover-bg, rgba(156, 39, 176, 0.15));
+    border-color: var(--color-primary-light);
+    cursor: pointer;
+}
+
+/* Animation for when a card is added to the hand */
+@keyframes card-added-to-hand {
+    0% {
+        transform: translateY(30px) scale(0.9);
+        opacity: 0.7;
+    }
+
+    50% {
+        transform: translateY(-10px) scale(1.05);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.hand-card-container.card-just-added {
+    animation: card-added-to-hand 0.5s forwards;
+}
+
+/* Animation for when a card is played from the hand */
+@keyframes card-played-from-hand {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-50px) scale(0.8);
+        opacity: 0;
+    }
+}
+
+.hand-card-container.card-being-played {
+    animation: card-played-from-hand 0.3s forwards;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hand-zone {
+        padding: var(--spacing-2);
+        min-height: 150px;
+    }
+
+    .hand-cards-container {
+        min-height: 120px;
+        padding: var(--spacing-1) var(--spacing-2);
+    }
+
+    .hand-cards-inner {
+        padding: var(--spacing-1) var(--spacing-2);
+    }
+
+    .hand-zone-empty-message {
+        min-height: 120px;
+    }
+
+    .hand-zone-scroll-button {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+/* Accessibility focus styles */
+.hand-zone:focus-within {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-primary), var(--shadow-md);
+}
+
+/* Card count indicator */
+.hand-zone[data-card-count="high"] .hand-zone-label {
+    color: var(--color-warning);
+    font-weight: bold;
+}
+
+/* Card selection styles */
+.hand-card-container.selected {
+    transform: translateY(-15px) !important;
+    z-index: 50 !important;
+}
+
+/* Card being dragged */
+.hand-card-container.dragging {
+    opacity: 0.7;
+    transform: scale(0.95);
+}
+
+/* Keyboard navigation focus */
+.hand-card-container:focus-within {
+    transform: translateY(-15px) !important;
+    z-index: 50 !important;
+    outline: none;
+}
+
+/* Card fan effect for many cards */
+.hand-zone[data-many-cards="true"] .hand-cards-inner {
+    justify-content: flex-start;
+    padding-left: var(--spacing-8);
+    padding-right: var(--spacing-8);
+}

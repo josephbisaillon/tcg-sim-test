@@ -1,0 +1,153 @@
+/* Active Pokemon Zone Component Styles */
+
+.active-pokemon-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3);
+    border-radius: var(--border-radius-md);
+    background-color: var(--color-zone-active-bg, rgba(0, 123, 255, 0.1));
+    border: 2px solid var(--color-zone-active, #0d6efd);
+    transition: all var(--transition-normal);
+    position: relative;
+    width: fit-content;
+    min-width: 120px;
+    min-height: 180px;
+}
+
+/* Card container */
+.active-pokemon-card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 140px;
+}
+
+/* Placeholder container */
+.active-pokemon-placeholder-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    min-height: 140px;
+    opacity: 0.7;
+}
+
+/* Zone label */
+.active-pokemon-zone-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    text-align: center;
+    margin-top: var(--spacing-1);
+}
+
+/* Opponent's active pokemon zone */
+.active-pokemon-zone-opponent {
+    background-color: var(--color-zone-active-opponent-bg, rgba(0, 123, 255, 0.05));
+    border-color: var(--color-zone-active-opponent, #0d47a1);
+}
+
+/* Empty zone styling */
+.active-pokemon-zone-empty {
+    background-color: var(--color-zone-active-empty-bg, rgba(0, 123, 255, 0.05));
+    border-style: dashed;
+}
+
+/* Drop target styling */
+.active-pokemon-zone-drop-target {
+    background-color: var(--color-zone-active-drop-bg, rgba(0, 123, 255, 0.2));
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px var(--color-primary), var(--shadow-md);
+    transform: scale(1.02);
+}
+
+/* Hover effect when zone is a drop target */
+.active-pokemon-zone:not(.active-pokemon-zone-opponent)[data-droppable="true"]:hover {
+    background-color: var(--color-zone-active-hover-bg, rgba(0, 123, 255, 0.15));
+    border-color: var(--color-primary-light);
+    cursor: pointer;
+}
+
+/* Animation for when a card is placed */
+@keyframes card-placed {
+    0% {
+        transform: scale(0.9);
+        opacity: 0.7;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.active-pokemon-card-container.card-just-placed {
+    animation: card-placed 0.5s forwards;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .active-pokemon-zone {
+        padding: var(--spacing-2);
+        min-width: 100px;
+        min-height: 150px;
+    }
+
+    .active-pokemon-card-container,
+    .active-pokemon-placeholder-container {
+        min-height: 120px;
+    }
+}
+
+/* Accessibility focus styles */
+.active-pokemon-zone:focus-within {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-primary), var(--shadow-md);
+}
+
+/* Status indicators container */
+.active-pokemon-status-indicators {
+    position: absolute;
+    top: var(--spacing-2);
+    right: var(--spacing-2);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    z-index: 10;
+}
+
+/* Individual status indicator */
+.active-pokemon-status-indicator {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-primary);
+}
+
+/* Damage counter */
+.active-pokemon-damage-counter {
+    background-color: var(--color-danger);
+    color: white;
+}
+
+/* Energy counter */
+.active-pokemon-energy-counter {
+    background-color: var(--color-info);
+    color: white;
+}

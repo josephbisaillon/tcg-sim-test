@@ -1,0 +1,98 @@
+/* Icon Component Styles */
+
+.icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    vertical-align: middle;
+    color: currentColor;
+    transition: transform var(--transition-fast);
+}
+
+/* Size Variants */
+.icon-size-xs {
+    font-size: var(--font-size-xs);
+    width: 1em;
+    height: 1em;
+}
+
+.icon-size-sm {
+    font-size: var(--font-size-sm);
+    width: 1em;
+    height: 1em;
+}
+
+.icon-size-md {
+    font-size: var(--font-size-base);
+    width: 1em;
+    height: 1em;
+}
+
+.icon-size-lg {
+    font-size: var(--font-size-lg);
+    width: 1em;
+    height: 1em;
+}
+
+.icon-size-xl {
+    font-size: var(--font-size-xl);
+    width: 1em;
+    height: 1em;
+}
+
+/* Variant Styles */
+.icon-variant-default {
+    /* Default style */
+}
+
+.icon-variant-solid svg {
+    fill: currentColor;
+}
+
+.icon-variant-outline svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Interactive States */
+.icon[onClick]:not([disabled]) {
+    cursor: pointer;
+}
+
+.icon[onClick]:not([disabled]):hover {
+    transform: scale(1.1);
+}
+
+.icon[onClick]:not([disabled]):active {
+    transform: scale(0.95);
+}
+
+/* Accessibility */
+.icon[aria-hidden="true"] {
+    /* For decorative icons */
+}
+
+/* Common Icon Styles */
+.icon svg {
+    width: 1em;
+    height: 1em;
+    display: block;
+}
+
+/* When used inside buttons */
+.button .icon {
+    /* Ensure proper alignment in buttons */
+    position: relative;
+    top: -0.0625em;
+    /* Slight adjustment for visual alignment */
+}
+
+/* When used with text */
+.icon+span,
+span+.icon {
+    margin-left: var(--spacing-1);
+}

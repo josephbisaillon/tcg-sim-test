@@ -1,0 +1,202 @@
+/* Discard Pile Zone Component Styles */
+
+.discard-pile-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3);
+    border-radius: var(--border-radius-md);
+    background-color: var(--color-zone-discard-bg, rgba(244, 67, 54, 0.1));
+    border: 2px solid var(--color-zone-discard, #f44336);
+    transition: all var(--transition-normal);
+    position: relative;
+    width: fit-content;
+    min-width: 120px;
+    min-height: 180px;
+}
+
+/* Cards container */
+.discard-pile-cards-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 140px;
+}
+
+/* Individual card in the discard pile */
+.discard-pile-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: transform var(--transition-fast);
+}
+
+/* Placeholder container */
+.discard-pile-placeholder-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    min-height: 140px;
+    opacity: 0.7;
+}
+
+/* Zone label */
+.discard-pile-zone-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    text-align: center;
+    margin-top: var(--spacing-1);
+}
+
+/* Card count badge */
+.discard-pile-card-count {
+    position: absolute;
+    top: var(--spacing-2);
+    right: var(--spacing-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: var(--color-danger);
+    color: white;
+    font-size: var(--font-size-xs);
+    font-weight: bold;
+    box-shadow: var(--shadow-sm);
+    z-index: 10;
+}
+
+/* Opponent's discard pile zone */
+.discard-pile-zone-opponent {
+    background-color: var(--color-zone-discard-opponent-bg, rgba(244, 67, 54, 0.05));
+    border-color: var(--color-zone-discard-opponent, #d32f2f);
+}
+
+/* Empty zone styling */
+.discard-pile-zone-empty {
+    background-color: var(--color-zone-discard-empty-bg, rgba(244, 67, 54, 0.05));
+    border-style: dashed;
+}
+
+/* Drop target styling */
+.discard-pile-zone-drop-target {
+    background-color: var(--color-zone-discard-drop-bg, rgba(244, 67, 54, 0.2));
+    border-color: var(--color-danger);
+    box-shadow: 0 0 0 2px var(--color-danger), var(--shadow-md);
+    transform: scale(1.02);
+}
+
+/* Hover effect when zone is a drop target */
+.discard-pile-zone:not(.discard-pile-zone-opponent)[data-droppable="true"]:hover {
+    background-color: var(--color-zone-discard-hover-bg, rgba(244, 67, 54, 0.15));
+    border-color: var(--color-danger-light);
+    cursor: pointer;
+}
+
+/* Hover effect for the discard pile */
+.discard-pile-zone:not(.discard-pile-zone-empty):hover .discard-pile-cards-container {
+    transform: translateY(-4px);
+}
+
+/* Animation for when a card is added to the discard pile */
+@keyframes card-discarded {
+    0% {
+        transform: scale(0.9) translateY(-20px);
+        opacity: 0.7;
+    }
+
+    50% {
+        transform: scale(1.05) translateY(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+.discard-pile-card.card-just-discarded {
+    animation: card-discarded 0.5s forwards;
+}
+
+/* Animation for when a card is recovered from the discard pile */
+@keyframes card-recovered {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(0.8) translateY(-20px);
+        opacity: 0;
+    }
+}
+
+.discard-pile-card.card-being-recovered {
+    animation: card-recovered 0.3s forwards;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .discard-pile-zone {
+        padding: var(--spacing-2);
+        min-width: 100px;
+        min-height: 150px;
+    }
+
+    .discard-pile-cards-container,
+    .discard-pile-placeholder-container {
+        min-height: 120px;
+    }
+
+    .discard-pile-card-count {
+        width: 20px;
+        height: 20px;
+        font-size: calc(var(--font-size-xs) - 1px);
+    }
+}
+
+/* Accessibility focus styles */
+.discard-pile-zone:focus-within {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-danger), var(--shadow-md);
+}
+
+/* Empty discard pile */
+.discard-pile-zone.discard-pile-zone-empty .discard-pile-zone-label {
+    color: var(--color-text-tertiary);
+}
+
+/* High card count warning */
+.discard-pile-zone[data-high-cards="true"] .discard-pile-card-count {
+    background-color: var(--color-warning);
+}
+
+/* Top card preview on hover */
+.discard-pile-zone:not(.discard-pile-zone-empty):hover .discard-pile-card:first-child {
+    transform: translateY(-8px);
+    z-index: 10;
+}
+
+/* Card fan effect for discard pile with many cards */
+.discard-pile-zone[data-many-cards="true"] .discard-pile-card:nth-child(1) {
+    transform: translateY(0) translateX(0) rotate(0deg);
+}
+
+.discard-pile-zone[data-many-cards="true"] .discard-pile-card:nth-child(2) {
+    transform: translateY(2px) translateX(2px) rotate(2deg);
+}
+
+.discard-pile-zone[data-many-cards="true"] .discard-pile-card:nth-child(3) {
+    transform: translateY(4px) translateX(4px) rotate(4deg);
+}

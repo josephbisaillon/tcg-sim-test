@@ -1,0 +1,138 @@
+/* Player Field Component Styles */
+
+.player-field {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: var(--spacing-4);
+    gap: var(--spacing-4);
+    position: relative;
+    transition: all var(--transition-normal);
+}
+
+/* Top section containing prize cards, active/bench Pokémon, and deck/discard */
+.player-field-top {
+    display: flex;
+    width: 100%;
+    gap: var(--spacing-4);
+}
+
+/* Left section containing prize cards and deck/discard */
+.player-field-left {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    min-width: 150px;
+}
+
+/* Prize zone container */
+.player-field-prize-zone {
+    width: 100%;
+}
+
+/* Deck and discard pile container */
+.player-field-deck-discard {
+    display: flex;
+    gap: var(--spacing-3);
+    justify-content: space-between;
+}
+
+/* Center section containing active Pokémon and bench */
+.player-field-center {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: var(--spacing-4);
+}
+
+/* Active Pokémon zone container */
+.player-field-active-zone {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* Bench zone container */
+.player-field-bench-zone {
+    width: 100%;
+}
+
+/* Hand zone container */
+.player-field-hand-zone {
+    width: 100%;
+}
+
+/* Opponent's field styling */
+.player-field-opponent {
+    /* Flip the field for the opponent */
+    flex-direction: column-reverse;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .player-field {
+        padding: var(--spacing-3);
+        gap: var(--spacing-3);
+    }
+
+    .player-field-top {
+        gap: var(--spacing-3);
+    }
+
+    .player-field-left {
+        gap: var(--spacing-3);
+    }
+
+    .player-field-center {
+        gap: var(--spacing-3);
+    }
+}
+
+@media (max-width: 768px) {
+    .player-field {
+        padding: var(--spacing-2);
+        gap: var(--spacing-2);
+    }
+
+    .player-field-top {
+        flex-direction: column;
+        gap: var(--spacing-2);
+    }
+
+    .player-field-left {
+        flex-direction: row;
+        gap: var(--spacing-2);
+    }
+
+    .player-field-center {
+        gap: var(--spacing-2);
+    }
+
+    .player-field-deck-discard {
+        gap: var(--spacing-2);
+    }
+}
+
+/* Animations */
+@keyframes highlight-field {
+    0% {
+        box-shadow: 0 0 0 2px transparent;
+    }
+
+    50% {
+        box-shadow: 0 0 0 2px var(--color-primary);
+    }
+
+    100% {
+        box-shadow: 0 0 0 2px transparent;
+    }
+}
+
+.player-field-active {
+    animation: highlight-field 1s ease-in-out;
+}
+
+/* Accessibility focus styles */
+.player-field:focus-within {
+    outline: none;
+}
